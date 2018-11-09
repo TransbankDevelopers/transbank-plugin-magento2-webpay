@@ -10,8 +10,6 @@
 namespace Transbank\Webpay\Model;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
-use Transbank\Webpay\Model\Libwebpay\WebpayConfig;
-use Transbank\Webpay\Model\Libwebpay\WebpayNormal;
 
 class TransactionResult
 {

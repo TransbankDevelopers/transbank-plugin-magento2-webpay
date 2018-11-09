@@ -85,7 +85,7 @@ MX5lzVXafBH/sPd545fBH2J3xAY3jtP764G4M8JayOFzGB0=
 					<commerce_code>597020000540</commerce_code>
 					<environment>INTEGRACION</environment>
 					<sucefully_pay>complete</sucefully_pay>
-	        <error_pay>canceled</error_pay>
+	                <error_pay>canceled</error_pay>
 					<order_status>pending</order_status>
 				</security_parameters>
 			</webpay>

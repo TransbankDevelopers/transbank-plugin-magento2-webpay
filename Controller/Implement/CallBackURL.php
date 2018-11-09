@@ -1,12 +1,8 @@
 <?php
+namespace Transbank\Webpay\Controller\Implement;
 
-  namespace Transbank\Webpay\Controller\Implement;
+class CallBackURL extends \Magento\Framework\App\Action\Action {
 
-/**
- *
- */
-class CallBackURL extends \Magento\Framework\App\Action\Action
-{
     public function __construct(
         \Transbank\Webpay\Model\getTransactionResult $customer,
         \Magento\Checkout\Model\Session $session,
@@ -19,14 +15,10 @@ class CallBackURL extends \Magento\Framework\App\Action\Action
         $this->_scopeConfig    = $scopeConfig;
         $this->_messageManager = $context->getMessageManager();
         $this->_logger = $logger;
-
         parent::__construct($context);
     }
 
-    public function execute()
-    {
-        $this->_logger->info("[Allware] ".json_encode($_POST));
-
+    public function execute() {
 
         if (!isset($_POST['token_ws'])) {
             $token = $_GET['token_ws'];
@@ -41,11 +33,9 @@ class CallBackURL extends \Magento\Framework\App\Action\Action
 
         $this->_session->setToken($token);
 
-
-
         $result = $this->_customer->getTransactionResult($token);
         $paySucefully = $this->_scopeConfig->getValue('payment/webpay/security_parameters/sucefully_pay');
-        $payError     = $this->_scopeConfig->getValue('payment/webpay/security_parameters/error_pay');
+        $payError = $this->_scopeConfig->getValue('payment/webpay/security_parameters/error_pay');
 
         $result = json_decode(json_encode($result), true);
 
@@ -55,49 +45,33 @@ class CallBackURL extends \Magento\Framework\App\Action\Action
             $this->_session->setResultWebpay($result);
             $order->setState($paySucefully)->setStatus($paySucefully);
             $order->save();
-
             $this->_session->getQuote()->setIsActive(false)->save();
-
             $this->redirect($result['urlRedirection'],array('token_ws' => $token));
-
-
         } else {
             $this->_session->setResultWebpay($result);
             $order->setState($payError)->setStatus($payError);
             $order->save();
-            $send =  array(
-              'responseCode' => $result['detailOutput']['responseCode'],
-              'responseDescription' => $result['detailOutput']['responseDescription'],
-              'amount' => $result['detailOutput']['amount'],
-              'transactionDate' => $result['transactionDate'],
-              'cardNumber' => $result['cardDetail']['cardNumber'],
-              'buyOrder' => $result['buyOrder']
-          );
-
+            $send = array(
+                'responseCode' => $result['detailOutput']['responseCode'],
+                'responseDescription' => $result['detailOutput']['responseDescription'],
+                'amount' => $result['detailOutput']['amount'],
+                'transactionDate' => $result['transactionDate'],
+                'cardNumber' => $result['cardDetail']['cardNumber'],
+                'buyOrder' => $result['buyOrder']
+            );
             $this->redirect($result['urlRedirection'],$send);
-
             $this->_session->restoreQuote();
-
-
         }
-
-
-
-
     }
 
-    public function redirect($url, $data)
-    {
-        echo  "<form action='$url' method='POST' name='webpayForm'>";
+    public function redirect($url, $data) {
+        echo "<form action='$url' method='POST' name='webpayForm'>";
         foreach ($data as $name => $value) {
             echo "<input type='hidden' name='".htmlentities($name)."' value='".htmlentities($value)."'>";
         }
-        echo  "</form>";
-        echo      "<script language='JavaScript'>"
+        echo "</form>";
+        echo "<script language='JavaScript'>"
                 ."document.webpayForm.submit();"
                 ."</script>";
     }
-
-
-
 }

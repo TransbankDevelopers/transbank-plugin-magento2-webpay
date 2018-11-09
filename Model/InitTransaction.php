@@ -1,13 +1,11 @@
 <?php
-
 namespace Transbank\Webpay\Model;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
-use Transbank\Webpay\Model\Libwebpay\WebpayConfig;
 use Transbank\Webpay\Model\Libwebpay\WebpayNormal;
 
-class InitTransaction implements ConfigProviderInterface
-{
+class InitTransaction implements ConfigProviderInterface {
+
 	public function __construct(
 		\Magento\Checkout\Model\Cart $cart,
 		\Magento\Framework\App\Action\Context $context,
@@ -39,22 +37,19 @@ class InitTransaction implements ConfigProviderInterface
 		);
 	}
 
-	public function getConfig()
-	{
+	public function getConfig(){
 		return [
-			'initTransaction' => $this->getInitTransaction(),
+		    'initTransaction' => $this->getInitTransaction(),
 		];
 	}
 
-	public function getInitTransaction()
-	{
+	public function getInitTransaction() {
 		try {
 			$writer = new \Zend\Log\Writer\Stream(BP . '/var/log/test.log');
 			$logger = new \Zend\Log\Logger();
 			$logger->addWriter($writer);
 
-			$this->webpayconfig = new WebPayConfig($this->config);
-			$this->webpay = new WebPayNormal($this->webpayconfig);
+			$this->webpay = new WebPayNormal($this->config);
 
 			$getData       = $this->_cart->getQuote()->getData();
 			$getGrandTotal = round($this->_cart->getQuote()->getGrandTotal());

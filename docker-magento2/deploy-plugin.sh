@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DIR='./src/app/code/Transbank/Onepay'
+DIR='./src/app/code/Transbank/Webpay'
 mkdir -p $DIR
 cp -rf ../Block $DIR
 cp -rf ../Controller $DIR

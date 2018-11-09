@@ -1,15 +1,14 @@
 <?php
 namespace Transbank\Webpay\Model\Config\Source;
 
-class Environment implements \Magento\Framework\Option\ArrayInterface
-{
+class Environment implements \Magento\Framework\Option\ArrayInterface {
+
     /**
      * Options getter
      *
      * @return array
      */
-    public function toOptionArray()
-    {
+    public function toOptionArray() {
         return [['value' => 'INTEGRACION', 'label' => __('INTEGRACION')],
                 ['value' => 'PRODUCCION', 'label' => __('PRODUCCION')]];
     }
@@ -19,8 +18,7 @@ class Environment implements \Magento\Framework\Option\ArrayInterface
      *
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray() {
         return ['INTEGRACION' => __('INTEGRACION'),  'PRODUCCION' => __('PRODUCCION')];
     }
 }
