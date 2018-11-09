@@ -1,19 +1,17 @@
 <?php
 namespace Transbank\Webpay\Controller\Adminhtml\CreatePdf;
 
-use Magento\Backend\App\Action;
-use Magento\Backend\App\Action\Context;
 use Transbank\Webpay\Model\Libwebpay\HealthCheck;
 use Transbank\Webpay\Model\Libwebpay\ReportPdfLog;
 
-class Index extends Action {
+class Index extends \Magento\Backend\App\Action {
 
     /**
      * Constructor
      *
      * @param \Magento\Backend\App\Action\Context $context
      */
-    public function __construct(Context $context) {
+    public function __construct(\Magento\Backend\App\Action\Context $context) {
         parent::__construct($context);
     }
 
@@ -28,7 +26,7 @@ class Index extends Action {
         }
         // var_dump($_COOKIE);
         $ecommerce = 'magento';
-        $arg =  array('MODO' => $_COOKIE["ambient"],
+        $arg = array('MODO' => $_COOKIE["ambient"],
                     'COMMERCE_CODE' => $_COOKIE["storeID"],
                     'PUBLIC_CERT' => $_COOKIE["certificate"],
                     'PRIVATE_KEY' => $_COOKIE["secretCode"],

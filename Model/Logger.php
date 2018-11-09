@@ -5,20 +5,18 @@ class Logger {
     public static function log($msg, $file, $priority = 'debug') {
         switch ($priority) {
             case 'error':
-            $prior = \Zend\Log\Logger::ERR;
+                $prior = \Zend\Log\Logger::ERR;
             break;
             case 'warning':
                 $prior = \Zend\Log\Logger::WARN;
-                break;
+            break;
             case 'info':
                 $prior = \Zend\Log\Logger::INFO;
-                break;
-
+            break;
             default:
-            $prior = \Zend\Log\Logger::DEBUG;
+                $prior = \Zend\Log\Logger::DEBUG;
             break;
         }
-
         $writer = new \Zend\Log\Writer\Stream(BP . $file);
         $logger = new \Zend\Log\Logger();
         $logger->addWriter($writer);

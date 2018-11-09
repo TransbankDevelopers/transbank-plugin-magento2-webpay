@@ -1,20 +1,15 @@
 <?php
 namespace Transbank\Webpay\Controller\Implement;
 
-class Finish extends \Magento\Framework\App\Action\Actionc {
+class Finish extends \Magento\Framework\App\Action\Action {
 
     public function __construct(
-      \Transbank\Webpay\Model\getTransactionResult $customer,
-      \Magento\Checkout\Model\Session $session,
-      \Magento\Framework\App\Action\Context $context,
-      \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-      \Psr\Log\LoggerInterface $logger
-    ) {
-        $this->_customer = $customer;
-        $this->_session  = $session;
-        $this->_scopeConfig    = $scopeConfig;
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Checkout\Model\Session $session,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig) {
+        $this->_session = $session;
+        $this->_scopeConfig = $scopeConfig;
         $this->_messageManager = $context->getMessageManager();
-        $this->_logger = $logger;
         parent::__construct($context);
     }
 

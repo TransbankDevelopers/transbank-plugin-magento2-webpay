@@ -4,12 +4,12 @@ namespace Transbank\Webpay\Model;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Transbank\Webpay\Model\Libwebpay\WebpayNormal;
 
-class getTransactionResult implements ConfigProviderInterface {
+class TransactionResult implements ConfigProviderInterface {
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager) {
-        $this->_scopeConfig  = $scopeConfig;
+        $this->_scopeConfig = $scopeConfig;
         $this->_storeManager = $storeManager;
 
         $this->config = array(
@@ -28,20 +28,20 @@ class getTransactionResult implements ConfigProviderInterface {
                 "SI" => "3 cuotas sin inter&eacute;s",
                 "S2" => "2 cuotas sin inter&eacute;s",
                 "NC" => "N cuotas sin inter&eacute;s",
-            ),
+            )
         );
     }
 
     public function getConfig() {
         return [
-            'getTransactionResult' => $this->getTransactionResult()
+            'transactionResult' => $this->transactionResult()
         ];
     }
 
-    public function getTransactionResult($token) {
+    public function transactionResult($token) {
         try {
-            $this->webpay = new WebPayNormal($this->config);
-            $result = $this->webpay->getTransactionResult($token);
+            $webpay = new WebPayNormal($this->config);
+            $result = $webpay->getTransactionResult($token);
         } catch (Exception $e) {
             $result[] = 'Error!:';
             $result[] = $e;

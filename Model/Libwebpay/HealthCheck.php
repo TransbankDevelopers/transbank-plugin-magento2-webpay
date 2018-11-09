@@ -22,7 +22,6 @@ class HealthCheck {
     public $certficados;
     public $ecommerce;
     public $nusoap;
-    public $webpay;
     public $testurl;
 
     public function __construct($config) {
@@ -232,12 +231,12 @@ class HealthCheck {
     }
 
     private function setInitTransaction() {
-        $this->webpay = new WebPayNormal($this->config);
+        $webpay = new WebPayNormal($this->config);
         $amount = 9990;
         $buyOrder = "_HealthCheck_";
         $sessionId = uniqid();
         $url = "https://webpay3gint.transbank.cl/filtroUnificado/initTransaction";
-        $this->result = $this->webpay->initTransaction($amount, $sessionId, $buyOrder, $url);
+        $this->result = $webpay->initTransaction($amount, $sessionId, $buyOrder, $url);
         if ($this->result)
         {
         if (!empty($this->result) && isset($this->result))

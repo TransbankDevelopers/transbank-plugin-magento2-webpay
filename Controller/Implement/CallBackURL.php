@@ -1,21 +1,41 @@
 <?php
 namespace Transbank\Webpay\Controller\Implement;
 
+use Transbank\Webpay\Model\Libwebpay\WebpayNormal;
+
 class CallBackURL extends \Magento\Framework\App\Action\Action {
 
     public function __construct(
-        \Transbank\Webpay\Model\getTransactionResult $customer,
-        \Magento\Checkout\Model\Session $session,
         \Magento\Framework\App\Action\Context $context,
+        \Magento\Checkout\Model\Session $session,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Psr\Log\LoggerInterface $logger
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-        $this->_customer = $customer;
-        $this->_session  = $session;
-        $this->_scopeConfig    = $scopeConfig;
+        $this->_session = $session;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_storeManager = $storeManager;
         $this->_messageManager = $context->getMessageManager();
-        $this->_logger = $logger;
         parent::__construct($context);
+
+        $this->config = array(
+            "MODO" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/environment'),
+            "PRIVATE_KEY" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/private_key'),
+            "PUBLIC_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/public_cert'),
+            "WEBPAY_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/webpay_cert'),
+            "COMMERCE_CODE" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code'),
+            "URL_RETURN" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/CallBackURL",
+            "URL_FINAL" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/Finish",
+            //"URL_FINAL" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/CallBackFinal",
+            "ECOMMERCE" => "magento",
+            "VENTA_DESC" => array(
+                "VD" => "Venta Deb&iacute;to",
+                "VN" => "Venta Normal",
+                "VC" => "Venta en cuotas",
+                "SI" => "3 cuotas sin inter&eacute;s",
+                "S2" => "2 cuotas sin inter&eacute;s",
+                "NC" => "N cuotas sin inter&eacute;s",
+            )
+        );
     }
 
     public function execute() {
@@ -28,18 +48,25 @@ class CallBackURL extends \Magento\Framework\App\Action\Action {
 
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $orderDatamodel = $objectManager->get('Magento\Sales\Model\Order')->getCollection()->getLastItem();
-        $orderId   =   $orderDatamodel->getId();
+        $orderId = $orderDatamodel->getId();
         $order = $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
 
         $this->_session->setToken($token);
 
-        $result = $this->_customer->getTransactionResult($token);
+        $result = array();
+
+        try {
+            $webpay = new WebPayNormal($this->config);
+            $result = $webpay->getTransactionResult($token);
+        } catch (Exception $e) {
+            $result[] = 'Error!:';
+            $result[] = $e;
+        }
+
         $paySucefully = $this->_scopeConfig->getValue('payment/webpay/security_parameters/sucefully_pay');
         $payError = $this->_scopeConfig->getValue('payment/webpay/security_parameters/error_pay');
 
         $result = json_decode(json_encode($result), true);
-
-        $this->_logger->info(json_encode($result));
 
         if (($result['VCI'] == 'TSY' ||$result['VCI'] == 'A' || $result['VCI'] == "") && $result['detailOutput']['responseCode'] == 0) {
             $this->_session->setResultWebpay($result);
