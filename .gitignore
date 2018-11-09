@@ -1,0 +1,5 @@
+.DS_Store
+/.idea
+.idea
+docker-magento2/src/**
+plugin-transbank-onepay-**.zip

@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+  <system>
+    <section id="payment">
+      <group id="webpay" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+        <label>Webpay</label>
+        <comment><![CDATA[Si no posee codigo de comercio en Transbank <a href="https://www.transbank.cl/web/solicitudes/webpay"  target="_blank" >Porfavor registrese en aqui</a> ]]></comment>
+        <field id="title" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="text">
+          <label>Titulo     </label>
+        </field>
+        <field id="active" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="2" translate="label" type="select">
+          <label>Habilitado</label>
+          <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+        </field>
+        <group id="main_parameters" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label>Parametros Principales</label>
+          <attribute type="expanded">0</attribute>
+          <field id="tbk_button" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="09" translate="label" type="button">
+            <label>Herramienta de diagnostico</label>
+            <frontend_model>Transbank\Webpay\Block\System\Config\TbkButton</frontend_model>
+          </field>
+        </group>
+        <group id="security_parameters" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+          <label>Parametros de seguridad</label>
+          <attribute type="expanded">0</attribute>
+          <field id="environment" translate="label" type="select" showInDefault="1" showInStore="0" showInWebsite="1" sortOrder="40">
+            <label>Ambiente a Utilizar</label>
+            <source_model>Transbank\Webpay\Model\Config\Source\Environment</source_model>
+          </field>
+          <!-- -->
+          <!-- Codigo de Comercio -->
+          <field id="commerce_code" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Codigo de Comercio</label>
+            <comment>Identificador único del comercio</comment>
+          </field>
+          <!-- Llave Privada -->
+          <field id="private_key" translate="label" type="textarea" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Llave Privada</label>
+          </field>
+          <!-- Llave de Plugin -->
+          <field id="public_cert" translate="label" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Certificado Publico</label>
+          </field>
+          <field id="webpay_cert" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Certificado Webpay</label>
+          </field>
+          <field id="sucefully_pay" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Estado de Pago Exitoso</label>
+            <source_model>Transbank\Webpay\Model\Config\Source\OrderStatus</source_model>
+          </field>
+          <field id="error_pay" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Estado de Pago Erroneo</label>
+            <source_model>Transbank\Webpay\Model\Config\Source\OrderStatus</source_model>
+          </field>
+          <field id="order_status" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Estado de Nueva Orden</label>
+            <source_model>Magento\Sales\Model\Config\Source\Order\Status\NewStatus</source_model>
+          </field>
+          <field id="sort_order" translate="label" type="text" sortOrder="900" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Sort Order</label>
+            <frontend_class>validate-number</frontend_class>
+          </field>
+        </group>
+      </group>
+    </section>
+  </system>
+</config>

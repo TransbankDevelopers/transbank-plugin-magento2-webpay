@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+mkdir -p src
+chmod -R 777 src
+
+bash start
+bash shell

@@ -1,0 +1,52 @@
+version: '2'
+services:
+  apache:
+    build: .
+    ports:
+      - "80:80" # web
+    volumes:
+      - ./src:/var/www/html
+      - ~/.composer:/var/www/.composer
+      - ~/.npm:/var/www/.npm
+    environment:
+      PHP_IDE_CONFIG: "serverName=Docker"
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      - magento2-network
+
+  db:
+    image: mariadb
+    ports:
+     - 3300:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=magento
+      - MYSQL_USER=magento
+      - MYSQL_PASSWORD=magento
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - magento2-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+     - PMA_HOST=db
+     - PMA_USER=root
+     - PMA_PASSWORD=root
+     - MYSQL_ROOT_PASSWORD=root
+    ports:
+     - 8090:80
+    networks:
+      - magento2-network
+
+networks:
+  magento2-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local

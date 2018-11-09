@@ -1,0 +1,46 @@
+{
+    "name": "transbank/webpay-magento2",
+    "description": "Pago via tarjetas debito y credito a travez de transbank",
+    "require": {
+        "php": "~5.5.0|~5.6.0",
+        "ext-simplexml": "*",
+        "ext-openssl": "=>1.0.1",
+        "ext-soap": "*",
+        "ext-dom": "=>2.7.8",
+        "ext-mcrypt": "*",
+        "ext-sockets": "*",
+        "magento/module-sales": ">100.0",
+        "magento/module-checkout": ">100.0",
+        "magento/module-payment": ">100.0",
+        "magento/framework": ">100.0",
+        "transbank/transbank-sdk": "1.4.3"
+    },
+    "type": "magento2-module",
+    "version": "3.1.1",
+    "extra": {
+        "map": [
+            [
+                "*",
+                "Transbank/Webpay"
+            ]
+        ]
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Transbank\\Webpay\\": ""
+        }
+    },
+    "archive": {
+        "exclude": [
+            "/docs",
+            "/docker-magento2",
+            "/package.sh",
+            "/.travis.yml",
+            "/.gitignore",
+            "/.gitattributes"
+        ]
+    }
+}
