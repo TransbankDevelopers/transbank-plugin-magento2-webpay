@@ -13,6 +13,9 @@ class Finish extends \Magento\Framework\App\Action\Action {
         parent::__construct($context);
     }
 
+    /**
+     * @Override
+     */
     public function execute() {
         $result = $this->_session->getResultWebpay();
         $result = $_POST;

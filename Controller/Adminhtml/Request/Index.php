@@ -15,15 +15,9 @@ class Index extends \Magento\Backend\App\Action {
     }
 
     /**
-     * Load the page defined in view/adminhtml/layout/exampleadminnewpage_helloworld_index.xml
-     *
-     * @return \Magento\Framework\View\Result\Page
+     * @Override
      */
     public function execute() {
-
-        if (!isset($_COOKIE["ambient"])) {
-            die;
-        }
 
         $type = $_POST['type'];
 

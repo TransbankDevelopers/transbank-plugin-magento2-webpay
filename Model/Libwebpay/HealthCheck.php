@@ -78,10 +78,10 @@ class HealthCheck {
         }
         if (openssl_x509_check_private_key($this->publicCert, $this->privateKey)) {
             if ($this->commerceCode == $this->certinfo['subject_commerce_code']) {
-            $this->certificates = array(
-                'cert_vs_private_key' => 'OK',
-                'commerce_code_validate' => 'OK'
-            );
+                $this->certificates = array(
+                    'cert_vs_private_key' => 'OK',
+                    'commerce_code_validate' => 'OK'
+                );
             }
         } else {
             $this->certificates = array(
@@ -93,15 +93,15 @@ class HealthCheck {
 
     // valida version de php
     private function getValidatephp() {
-        if (version_compare(phpversion(), '7.0.0', '<') and version_compare(phpversion(), '5.3.0', '>=')) {
+        if (version_compare(phpversion(), '7.1.23', '<=') and version_compare(phpversion(), '5.3.0', '>=')) {
             $this->versioninfo = array(
-            'status' => 'OK',
-            'version' => phpversion()
+                'status' => 'OK',
+                'version' => phpversion()
             );
         } else {
             $this->versioninfo = array(
-            'status' => 'Error!: Version no soportada',
-            'version' => phpversion()
+                'status' => 'Error!: Version no soportada',
+                'version' => phpversion()
             );
         }
         return $this->versioninfo;
@@ -191,69 +191,67 @@ class HealthCheck {
 
     // lista y valida extensiones/ modulos de php en servidor ademas mostrar version
     private function getExtensionsValidate() {
-      foreach ($this->extensions as $value) {
-        $this->resExtensions[$value] = $this->getCheckExtension($value);
-      }
-      return $this->resExtensions;
+        foreach ($this->extensions as $value) {
+            $this->resExtensions[$value] = $this->getCheckExtension($value);
+        }
+        return $this->resExtensions;
     }
 
     // crea resumen de informacion del servidor. NO incluye a PHP info
     private function getServerResume() {
-      $this->resume = array(
-        'php_version' => $this->getValidatephp(),
-        'server_version' => array('server_software' => $_SERVER['SERVER_SOFTWARE']),
-        'plugin_info' => $this->getPluginInfo($this->ecommerce)
-      );
-      return $this->resume;
+        $this->resume = array(
+            'php_version' => $this->getValidatephp(),
+            'server_version' => array('server_software' => $_SERVER['SERVER_SOFTWARE']),
+            'plugin_info' => $this->getPluginInfo($this->ecommerce)
+        );
+        return $this->resume;
     }
     // crea array con la informacion de comercio para posteriormente exportarla via json
     private function getCommerceInfo() {
-      $result = array(
-        'environment' => $this->environment,
-        'commerce_code' => $this->commerceCode,
-        'public_cert' => $this->publicCert,
-        'private_key' => $this->privateKey,
-        'webpay_cert' => $this->webpayCert
-      );
-      return array('data' => $result);
+        $result = array(
+            'environment' => $this->environment,
+            'commerce_code' => $this->commerceCode,
+            'public_cert' => $this->publicCert,
+            'private_key' => $this->privateKey,
+            'webpay_cert' => $this->webpayCert
+        );
+        return array('data' => $result);
     }
 
     // guarda en array informacion de funcion phpinfo
     private function getPhpInfo() {
-      ob_start();
-      phpinfo();
-      $info = ob_get_contents();
-      ob_end_clean();
-      $newinfo = strstr($info, '<table>');
-      $newinfo = strstr($newinfo, '<h1>PHP Credits</h1>', true);
-      $return = array('string' => array('content' => str_replace('</div></body></html>', '', $newinfo)));
-      return $return;
+        ob_start();
+        phpinfo();
+        $info = ob_get_contents();
+        ob_end_clean();
+        $newinfo = strstr($info, '<table>');
+        $newinfo = strstr($newinfo, '<h1>PHP Credits</h1>', true);
+        $return = array('string' => array('content' => str_replace('</div></body></html>', '', $newinfo)));
+        return $return;
     }
 
     private function setInitTransaction() {
-        $webpay = new WebPayNormal($this->config);
+        $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
         $amount = 9990;
         $buyOrder = "_HealthCheck_";
         $sessionId = uniqid();
-        $url = "https://webpay3gint.transbank.cl/filtroUnificado/initTransaction";
-        $this->result = $webpay->initTransaction($amount, $sessionId, $buyOrder, $url);
-        if ($this->result)
-        {
-        if (!empty($this->result) && isset($this->result))
-        {
-            $status = 'OK';
+        $returnUrl = "https://webpay3gint.transbank.cl/filtroUnificado/initTransaction";
+        $finalUrl = "https://webpay3gint.transbank.cl/filtroUnificado/initTransaction";
+        $this->result = $transbankSdkWebpay->initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl);
+        if ($this->result) {
+            if (!empty($this->result["error"]) && isset($this->result["error"])) {
+                $status = 'Error';
+            } else {
+                $status = 'OK';
+            }
         } else {
-            $status = 'Error';
-        }
-        } else {
-        if (array_key_exists('error', $this->result))
-        {
-            $status =  "Error";
-        }
+            if (array_key_exists('error', $this->result)) {
+                $status =  "Error";
+            }
         }
         $response = array(
-        'status' => array('string' => $status),
-        'response' => preg_replace('/<!--(.*)-->/Uis', '', $this->result)
+            'status' => array('string' => $status),
+            'response' => preg_replace('/<!--(.*)-->/Uis', '', $this->result)
         );
         return $response;
     }
@@ -313,7 +311,7 @@ class HealthCheck {
 
     // imprime en formato json el resumen completo
     public function printFullResume() {
-        return json_encode($this->getFullResume(), JSON_PRETTY_PRINT); // NOTE: quitar el pretty print antes de pasar a produccion
+        return json_encode($this->getFullResume());
     }
 
     public function getInitTransaction() {

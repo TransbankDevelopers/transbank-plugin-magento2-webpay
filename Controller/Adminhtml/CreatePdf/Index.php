@@ -16,22 +16,18 @@ class Index extends \Magento\Backend\App\Action {
     }
 
     /**
-     * Load the page defined in view/adminhtml/layout/exampleadminnewpage_helloworld_index.xml
-     *
-     * @return \Magento\Framework\View\Result\Page
+     * @Override
      */
     public function execute() {
         if (!isset($_COOKIE["ambient"])) {
             die;
         }
-        // var_dump($_COOKIE);
-        $ecommerce = 'magento';
         $arg = array('MODO' => $_COOKIE["ambient"],
                     'COMMERCE_CODE' => $_COOKIE["storeID"],
                     'PUBLIC_CERT' => $_COOKIE["certificate"],
                     'PRIVATE_KEY' => $_COOKIE["secretCode"],
                     'WEBPAY_CERT' => $_COOKIE["certificateTransbank"],
-                    'ECOMMERCE' => $ecommerce);
+                    'ECOMMERCE' => 'magento');
         $document = $_COOKIE["document"];
 
         setcookie("ambient", "", time()-3600, '/');
@@ -49,8 +45,7 @@ class Index extends \Magento\Backend\App\Action {
         unset($_COOKIE['document']);
 
         $healthcheck = new HealthCheck($arg);
-        $json =$healthcheck->printFullResume();
-        $rl = new ReportPdfLog($document);
+        $json = $healthcheck->printFullResume();
         $temp = json_decode($json);
         if ($document == "report") {
             unset($temp->php_info);
@@ -58,6 +53,7 @@ class Index extends \Magento\Backend\App\Action {
             $temp = array('php_info' => $temp->php_info);
         }
         $json = json_encode($temp);
+        $rl = new ReportPdfLog($document);
         $rl->getReport($json);
     }
 }

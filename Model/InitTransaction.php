@@ -2,7 +2,7 @@
 namespace Transbank\Webpay\Model;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
-use Transbank\Webpay\Model\Libwebpay\WebpayNormal;
+use Transbank\Webpay\Model\Libwebpay\TransbankSdkWebpay;
 
 class InitTransaction implements ConfigProviderInterface {
 
@@ -11,8 +11,8 @@ class InitTransaction implements ConfigProviderInterface {
 		\Magento\Framework\App\Action\Context $context,
 		\Magento\Checkout\Model\Session $session,
 		\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-		\Magento\Store\Model\StoreManagerInterface $storeManager
-	) {
+		\Magento\Store\Model\StoreManagerInterface $storeManager) {
+
 		$this->_scopeConfig  = $scopeConfig;
 		$this->_storeManager = $storeManager;
 		$this->_cart = $cart;
@@ -25,15 +25,7 @@ class InitTransaction implements ConfigProviderInterface {
 			"COMMERCE_CODE" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code'),
 			"URL_RETURN" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/CallBackURL",
 			"URL_FINAL" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/Finish",
-			"ECOMMERCE" => "magento",
-			"VENTA_DESC" => array(
-				"VD" => "Venta Deb&iacute;to",
-				"VN" => "Venta Normal",
-				"VC" => "Venta en cuotas",
-				"SI" => "3 cuotas sin inter&eacute;s",
-				"S2" => "2 cuotas sin inter&eacute;s",
-				"NC" => "N cuotas sin inter&eacute;s",
-			),
+			"ECOMMERCE" => "magento"
 		);
 	}
 
@@ -64,8 +56,11 @@ class InitTransaction implements ConfigProviderInterface {
 			$this->_session->setGrandTotal($grandTotal);
             $this->_session->setEntityId($entityId);
 
-            $webpay = new WebPayNormal($this->config);
-			$result = $webpay->initTransaction($grandTotal, $entityId, $orderId, $this->config['URL_FINAL']);
+            $returnUrl = $this->config['URL_RETURN'];
+            $finalUrl = $this->config['URL_FINAL'];
+
+            $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
+			$result = $transbankSdkWebpay->initTransaction($grandTotal, $entityId, $orderId, $returnUrl, $finalUrl);
 			return json_encode($result);
 		} catch (Exception $e) {
 		}

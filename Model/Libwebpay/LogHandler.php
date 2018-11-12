@@ -1,43 +1,32 @@
 <?php
 namespace Transbank\Webpay\Model\Libwebpay;
 
-use Transbank\Webpay\Model\Logger as Logger;
-
 define('Webpay_ROOT', dirname(__DIR__));
 
 class LogHandler {
 
-    private $timestamp;
-    private $idTransaction;
-    private $method;
-    private $request;
-    private $response;
+    //constants for log handler
+    const LOG_DEBUG_ENABLED = false; //enable or disable debug logs
+    const LOG_INFO_ENABLED = true; //enable or disable info logs
+    const LOG_ERROR_ENABLED = true; //enable or disable error logs
+
     private $logFile;
     private $logDir;
     private $ecommerce;
-    private $configuration;
-    private $l4php;
 
     public function __construct($ecommerce = 'magento', $days = 7, $weight = '2MB') {
-        $this->timestamp = null;
-        $this->idTransaction = null;
-        $this->method = null;
-        $this->request =null;
         $this->reponse = null;
         $this->logFile = null;
         $this->ecommerce = $ecommerce;
-        $this->logDir = null;
         $this->lockfile = Webpay_ROOT."/set_logs_activate.lock";
         $dia = date('Y-m-d');
         $this->confdays = $days;
         $this->confweight = $weight;
 
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $directoryList = $objectManager->get('\Magento\Framework\App\Filesystem\DirectoryList');
-
-        $this->path = $directoryList->getRoot();
-        $this->logDir = "/var/log/Transbank_webpay";
+        $this->logDir = BP . "/var/log/Transbank_webpay";
         $this->logFile = "{$this->logDir}/log_transbank_{$this->ecommerce}_{$dia}.log";
+
+        $this->setMakeLogDir();
     }
 
     private function formatBytes($path) {
@@ -52,25 +41,16 @@ class LogHandler {
         return $bytes;
     }
 
-    private function getIsLogDir() {
-        if (! file_exists($this->logDir)) {
-            //echo "error!: no existe directorio de logs, favor crear uno";
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     private function setMakeLogDir() {
-        if ($this->getIsLogDir() === false) {
-
-        } else {
-            //   echo "error!: directorio ya ha sido creado";
-            exit;
+        try {
+            if (!file_exists($this->logDir)) {
+                mkdir($this->logDir, 0777, true);
+            }
+        } catch(Exception $e) {
         }
     }
 
-    private function setparamsconf($days, $weight) {
+    public function setparamsconf($days, $weight) {
         if (file_exists($this->lockfile)) {
             $file = fopen($this->lockfile, "w") or die("No se puede truncar archivo");
             if (! is_numeric($days) or $days == null or $days == '' or $days === false) {
@@ -130,19 +110,15 @@ class LogHandler {
     }
 
     private function delLockFile() {
-        if (! file_exists($this->lockfile)) {
-            // exit;
-        } else {
+        if (file_exists($this->lockfile)) {
             unlink($this->lockfile);
         }
     }
 
     private function setLogList() {
-        if (! $this->path.$this->logDir) {
-            $this->setMakeLogDir();
-        }
-        $arr = array_diff(scandir($this->path.$this->logDir), array('.', '..'));
-        $dira = str_replace($_SERVER['DOCUMENT_ROOT'], "", $this->path.$this->logDir);
+        $this->setMakeLogDir();
+        $arr = array_diff(scandir($this->logDir), array('.', '..'));
+        $dira = str_replace($_SERVER['DOCUMENT_ROOT'], "", $this->logDir);
         foreach ($arr as $key => $value) {
             $var[] = "<a href='{$dira}/{$value}' download>{$value}</a>";
         }
@@ -152,14 +128,6 @@ class LogHandler {
             $this->logList = null;
         }
         return $this->logList;
-    }
-
-    public function setTransactionId($token) {
-        $this->transactionID = $token;
-    }
-
-    private function getTransactionId() {
-        return $this->transactionID;
     }
 
     private function setLastLog() {
@@ -180,7 +148,7 @@ class LogHandler {
             'log_weight' => $this->formatBytes($this->lastLog),
             'log_regs_lines' => count(file($this->lastLog)),
             'log_content' => $var
-            );
+        );
         return $return;
     }
 
@@ -213,14 +181,13 @@ class LogHandler {
     }
 
     private function setLogNewLine($args, $type) {
-        // $this->digestLogs();
         $content =  "[{$args['transactionId']}] [{$args['method']}] [{$args['request']}] [{$args['response']}] ";
         if ($type === true) {
-            Logger::log($content, $this->logFile, 'info');
+            $this->logger($content, 'info');
         } elseif ($type === false) {
-            Logger::log($content, $this->logFile, 'error');
+            $this->logger($content, 'error');
         } else {
-            Logger::log('se ha ingresado parametro no valido en la creacion de log', $this->logFile, 'warn');
+            $this->logger('se ha ingresado parametro no valido en la creacion de log', 'warn');
         }
     }
 
@@ -254,11 +221,7 @@ class LogHandler {
 
     // mantiene solo los ultimos n dias de logs
     private function digestLogs() {
-        if (! file_exists($this->logDir)) {
-            // echo "error!: no existe directorio de logs";
-            $this->setMakeLogDir();
-            //exit;
-        }
+        $this->setMakeLogDir();
         $files = glob($this->logDir.'/*', GLOB_ONLYDIR);
         $deletions = array_slice($files, 0, count($files) - $this->confdays);
         foreach ($deletions as $to_delete) {
@@ -348,16 +311,58 @@ class LogHandler {
 
     public function getResume() {
         $result = array(
-            'config' => $this->getValidateLockFile(),
+            'lock_file' => $this->getLockFile(),
+            'validate_lock_file' => $this->getValidateLockFile(),
             'log_dir' => $this->setLogDir(),
             'logs_count' => $this->setLogCount(),
             'logs_list' => $this->setLogList(),
             'last_log' => $this->setLastLog()
         );
-        return json_encode($result, JSON_PRETTY_PRINT); // NOTE: eliminar el pretty print antes de pasar a produccion
+        return $result;
     }
 
-    public function setnewconfig($days, $weight) {
-        $this->setparamsconf($days, $weight);
+    public function log($msg, $priority = 'debug') {
+        switch ($priority) {
+            case 'error':
+                $prior = \Zend\Log\Logger::ERR;
+            break;
+            case 'info':
+                $prior = \Zend\Log\Logger::INFO;
+            break;
+            default:
+                $prior = \Zend\Log\Logger::DEBUG;
+            break;
+        }
+        $writer = new \Zend\Log\Writer\Stream($this->logFile);
+        $logger = new \Zend\Log\Logger();
+        $logger->addWriter($writer);
+        $logger->log($prior, $msg);
+    }
+
+    /**
+     * print DEBUG log
+     */
+    public function logDebug($msg) {
+        if (self::LOG_DEBUG_ENABLED) {
+            $this->logger->log($msg, 'debug');
+        }
+    }
+
+    /**
+     * print INFO log
+     */
+    public function logInfo($msg) {
+        if (self::LOG_INFO_ENABLED) {
+            $this->logger->log($msg, 'info');
+        }
+    }
+
+    /**
+     * print ERROR log
+     */
+    public function logError($msg) {
+        if (self::LOG_ERROR_ENABLED) {
+            $this->logger->log($msg, 'error');
+        }
     }
 }

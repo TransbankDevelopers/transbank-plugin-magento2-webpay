@@ -20,7 +20,7 @@ class ReportPdfLog{
             $text = explode ("<br>" ,$html);
             $html='';
             foreach ($text as $row){
-            $html .= '<b>'.substr($row,0,21).'</b> '.substr($row,22).'<br>';
+                $html .= '<b>'.substr($row,0,21).'</b> '.substr($row,22).'<br>';
             }
             $obj += array('logs' => array('log' => $html));
         }

@@ -15,18 +15,16 @@ class Index extends \Magento\Backend\App\Action {
     }
 
     /**
-     * Load the page defined in view/adminhtml/layout/exampleadminnewpage_helloworld_index.xml
-     *
-     * @return \Magento\Framework\View\Result\Page
+     * @Override
      */
     public function execute() {
         if (!isset($_COOKIE["action_check"])) {
             die;
         }
-        $log = new loghandler('magento');
+        $log = new LogHandler();
         if ($_COOKIE["action_check"] == 'true') {
             $log->setLockStatus(true);
-            $log->setnewconfig($_COOKIE['days'] , $_COOKIE['size']);
+            $log->setparamsconf($_COOKIE['days'] , $_COOKIE['size']);
         } else {
             $log->setLockStatus(false);
         }

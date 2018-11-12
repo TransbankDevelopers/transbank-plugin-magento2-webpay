@@ -1,7 +1,7 @@
 <?php
 namespace Transbank\Webpay\Controller\Implement;
 
-use Transbank\Webpay\Model\Libwebpay\WebpayNormal;
+use Transbank\Webpay\Model\Libwebpay\TransbankSdkWebpay;
 
 class CallBackURL extends \Magento\Framework\App\Action\Action {
 
@@ -9,8 +9,8 @@ class CallBackURL extends \Magento\Framework\App\Action\Action {
         \Magento\Framework\App\Action\Context $context,
         \Magento\Checkout\Model\Session $session,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
-    ) {
+        \Magento\Store\Model\StoreManagerInterface $storeManager) {
+
         $this->_session = $session;
         $this->_scopeConfig = $scopeConfig;
         $this->_storeManager = $storeManager;
@@ -25,19 +25,13 @@ class CallBackURL extends \Magento\Framework\App\Action\Action {
             "COMMERCE_CODE" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code'),
             "URL_RETURN" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/CallBackURL",
             "URL_FINAL" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/Finish",
-            //"URL_FINAL" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/CallBackFinal",
-            "ECOMMERCE" => "magento",
-            "VENTA_DESC" => array(
-                "VD" => "Venta Deb&iacute;to",
-                "VN" => "Venta Normal",
-                "VC" => "Venta en cuotas",
-                "SI" => "3 cuotas sin inter&eacute;s",
-                "S2" => "2 cuotas sin inter&eacute;s",
-                "NC" => "N cuotas sin inter&eacute;s",
-            )
+            "ECOMMERCE" => "magento"
         );
     }
 
+    /**
+     * @Override
+     */
     public function execute() {
 
         if (!isset($_POST['token_ws'])) {
@@ -56,8 +50,8 @@ class CallBackURL extends \Magento\Framework\App\Action\Action {
         $result = array();
 
         try {
-            $webpay = new WebPayNormal($this->config);
-            $result = $webpay->getTransactionResult($token);
+            $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
+            $result = $transbankSdkWebpay->commitTransaction($token);
         } catch (Exception $e) {
             $result[] = 'Error!:';
             $result[] = $e;
@@ -86,7 +80,7 @@ class CallBackURL extends \Magento\Framework\App\Action\Action {
                 'cardNumber' => $result['cardDetail']['cardNumber'],
                 'buyOrder' => $result['buyOrder']
             );
-            $this->redirect($result['urlRedirection'],$send);
+            $this->redirect($result['urlRedirection'], $send);
             $this->_session->restoreQuote();
         }
     }

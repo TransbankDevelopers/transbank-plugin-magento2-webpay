@@ -94,8 +94,8 @@ class WebPayNormal {
     var $config;
     var $soapClient;
     private static $WSDL_URL_NORMAL = array(
-        "INTEGRACION"   => "https://webpay3gint.transbank.cl/WSWebpayTransaction/cxf/WSWebpayService?wsdl",
-        "PRODUCCION"    => "https://webpay3g.transbank.cl/WSWebpayTransaction/cxf/WSWebpayService?wsdl",
+        "INTEGRACION" => "https://webpay3gint.transbank.cl/WSWebpayTransaction/cxf/WSWebpayService?wsdl",
+        "PRODUCCION" => "https://webpay3g.transbank.cl/WSWebpayTransaction/cxf/WSWebpayService?wsdl",
     );
 
     private static $RESULT_CODES = array(
@@ -118,26 +118,25 @@ class WebPayNormal {
         $this->log = new LogHandler();
         $privateKey = $this->config["PRIVATE_KEY"];
         $publicCert = $this->config["PUBLIC_CERT"];
-        $modo = $this->config->getModo();
-        $url = WebPayNormal::$WSDL_URL_NORMAL[$modo];
+        $url = WebPayNormal::$WSDL_URL_NORMAL[$environment];
         $this->soapClient = new WSSecuritySoapClient($url, $privateKey, $publicCert, array(
             "trace" => true,
             "exceptions" => true
         ));
     }
 
-    function _getTransactionResult($getTransactionResult) {
-        $getTransactionResultResponse = $this->soapClient->getTransactionResult($getTransactionResult);
+    function _getTransactionResult($getTransactionResult_) {
+        $getTransactionResultResponse = $this->soapClient->getTransactionResult($getTransactionResult_);
         return $getTransactionResultResponse;
     }
 
-    function _acknowledgeTransaction($acknowledgeTransaction) {
-        $acknowledgeTransactionResponse = $this->soapClient->acknowledgeTransaction($acknowledgeTransaction);
+    function _acknowledgeTransaction($acknowledgeTransaction_) {
+        $acknowledgeTransactionResponse = $this->soapClient->acknowledgeTransaction($acknowledgeTransaction_);
         return $acknowledgeTransactionResponse;
     }
 
-    function _initTransaction($initTransaction) {
-        $initTransactionResponse = $this->soapClient->initTransaction($initTransaction);
+    function _initTransaction($initTransaction_) {
+        $initTransactionResponse = $this->soapClient->initTransaction($initTransaction_);
         return $initTransactionResponse;
     }
 
@@ -145,18 +144,18 @@ class WebPayNormal {
         return WebPayNormal::$RESULT_CODES[$code];
     }
 
-    public function initTransaction($amount, $sessionId, $ordenCompra, $urlFinal){
+    public function initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl){
         try{
             $error = array();
             $wsInitTransactionInput = new wsInitTransactionInput();
             $wsInitTransactionInput->wSTransactionType = "TR_NORMAL_WS";
             $wsInitTransactionInput->sessionId = $sessionId;
-            $wsInitTransactionInput->buyOrder = $ordenCompra;
-            $wsInitTransactionInput->returnURL = $this->config["URL_RETURN"];
-            $wsInitTransactionInput->finalURL = $urlFinal;
+            $wsInitTransactionInput->buyOrder = $buyOrder;
+            $wsInitTransactionInput->returnURL = $returnUrl;
+            $wsInitTransactionInput->finalURL = $finalUrl;
             $wsTransactionDetail = new wsTransactionDetail();
             $wsTransactionDetail->commerceCode = $this->config["COMMERCE_CODE"];
-            $wsTransactionDetail->buyOrder = $ordenCompra;
+            $wsTransactionDetail->buyOrder = $buyOrder;
             $wsTransactionDetail->amount = $amount;
             $wsInitTransactionInput->transactionDetails = $wsTransactionDetail;
             $initTransactionResponse = $this->_initTransaction(array("wsInitTransactionInput" => $wsInitTransactionInput));

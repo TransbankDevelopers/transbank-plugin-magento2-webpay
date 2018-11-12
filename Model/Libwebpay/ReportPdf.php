@@ -17,7 +17,7 @@ class ReportPdf {
 
     private function chain($element, $level){
         if ($level==0)
-            $this->buffer.='<table>';
+            $this->buffer.= '<table>';
 
         if (is_array($element)){
             $child_lvl=$level+1;
@@ -59,8 +59,7 @@ class ReportPdf {
     }
 
     public function getReport($myJSON){
-        $this->reportPDF();
-        $obj = json_decode($myJSON,true);
+        $obj = json_decode($myJSON, true);
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetPrintHeader(false);
