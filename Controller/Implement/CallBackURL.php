@@ -18,14 +18,14 @@ class CallBackURL extends \Magento\Framework\App\Action\Action {
         parent::__construct($context);
 
         $this->config = array(
+            "ECOMMERCE" => "magento",
             "MODO" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/environment'),
             "PRIVATE_KEY" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/private_key'),
             "PUBLIC_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/public_cert'),
             "WEBPAY_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/webpay_cert'),
             "COMMERCE_CODE" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code'),
             "URL_RETURN" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/CallBackURL",
-            "URL_FINAL" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/Finish",
-            "ECOMMERCE" => "magento"
+            "URL_FINAL" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/Finish"
         );
     }
 

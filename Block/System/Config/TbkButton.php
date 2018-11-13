@@ -21,13 +21,14 @@ class TbkButton extends Field {
     public function __construct(Context $context, array $data = [] ) {
         parent::__construct($context, $data);
         $this->context = $context;
+
         $this->config = array(
             "ECOMMERCE" => 'magento',
             "MODO" =>  $this->_scopeConfig->getValue('payment/webpay/security_parameters/environment'),
-            "PRIVATE_KEY" =>  $this->_scopeConfig->getValue('payment/webpay/security_parameters/private_key'),
-            "PUBLIC_CERT" =>  $this->_scopeConfig->getValue('payment/webpay/security_parameters/public_cert'),
-            "WEBPAY_CERT" =>  $this->_scopeConfig->getValue('payment/webpay/security_parameters/webpay_cert'),
-            "COMMERCE_CODE" =>  $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code')
+            "PRIVATE_KEY" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/private_key'),
+            "PUBLIC_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/public_cert'),
+            "WEBPAY_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/webpay_cert'),
+            "COMMERCE_CODE" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code')
         );
 
         $healthcheck = new HealthCheck($this->config);
@@ -39,7 +40,8 @@ class TbkButton extends Field {
         $this->tbk_data = array(
             'url_request' => $this->context->getUrlBuilder()->getUrl("admin_webpay/Request/index"),
             'url_call_log_handler' => $this->context->getUrlBuilder()->getUrl("admin_webpay/CallLogHandler/index"),
-            'url_create_pdf' => $this->context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index"),
+            'url_create_pdf_report' => $this->context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=report',
+            'url_create_pdf_php_info' => $this->context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=php_info',
             'cert_vs_private' =>$datos_hc->validate_certificates->consistency->cert_vs_private_key,
             'commerce_code_validate' => $datos_hc->validate_certificates->consistency->commerce_code_validate,
             'subject_commerce_code' => $datos_hc->validate_certificates->cert_info->subject_commerce_code,
@@ -70,11 +72,11 @@ class TbkButton extends Field {
             'dom_status' =>$datos_hc->php_extensions_status->dom->status,
             'dom_version' =>$datos_hc->php_extensions_status->dom->version,
             'php_info' =>$datos_hc->php_info->string->content,
-            'lockfile' => isset( $resume['lock_file']['status']) ?  $resume['last_log']['log_content'] : NULL,
-            'logs' => isset( $resume['last_log']['log_content']) ?  $resume['last_log']['log_content'] : NULL,
-            'log_file' => isset( $resume['last_log']['log_file']) ?  $resume['last_log']['log_file'] : NULL,
-            'log_weight' => isset( $resume['last_log']['log_weight']) ?  $resume['last_log']['log_weight'] : NULL,
-            'log_regs_lines' => isset( $resume['last_log']['log_regs_lines']) ?  $resume['last_log']['log_regs_lines'] : NULL,
+            'lockfile' => isset($resume['lock_file']['status']) ? $resume['lock_file']['status'] : NULL,
+            'logs' => isset($resume['last_log']['log_content']) ? $resume['last_log']['log_content'] : NULL,
+            'log_file' => isset($resume['last_log']['log_file']) ? $resume['last_log']['log_file'] : NULL,
+            'log_weight' => isset($resume['last_log']['log_weight']) ? $resume['last_log']['log_weight'] : NULL,
+            'log_regs_lines' => isset($resume['last_log']['log_regs_lines']) ? $resume['last_log']['log_regs_lines'] : NULL,
             'log_days' => $resume['validate_lock_file']['max_logs_days'],
             'log_size' => $resume['validate_lock_file']['max_log_weight'],
             'log_dir' => $resume['log_dir'],

@@ -5,11 +5,6 @@ use Transbank\Webpay\Model\Libwebpay\LogHandler;
 
 class Index extends \Magento\Backend\App\Action {
 
-    /**
-     * Constructor
-     *
-     * @param \Magento\Backend\App\Action\Context $context
-     */
     public function __construct(\Magento\Backend\App\Action\Context $context) {
         parent::__construct($context);
     }
@@ -18,17 +13,13 @@ class Index extends \Magento\Backend\App\Action {
      * @Override
      */
     public function execute() {
-        if (!isset($_COOKIE["action_check"])) {
-            die;
-        }
-        $log = new LogHandler();
-        if ($_COOKIE["action_check"] == 'true') {
-            $log->setLockStatus(true);
-            $log->setparamsconf($_COOKIE['days'] , $_COOKIE['size']);
+        $logHandler = new LogHandler();
+        if ($_POST["action_check"] == 'true') {
+            $logHandler->setLockStatus(true);
+            $logHandler->setparamsconf($_POST['days'], $_POST['size']);
         } else {
-            $log->setLockStatus(false);
+            $logHandler->setLockStatus(false);
         }
-        echo "<script>window.close();</script>";
     }
 }
 ?>

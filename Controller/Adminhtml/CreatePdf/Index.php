@@ -6,47 +6,32 @@ use Transbank\Webpay\Model\Libwebpay\ReportPdfLog;
 
 class Index extends \Magento\Backend\App\Action {
 
-    /**
-     * Constructor
-     *
-     * @param \Magento\Backend\App\Action\Context $context
-     */
-    public function __construct(\Magento\Backend\App\Action\Context $context) {
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig) {
         parent::__construct($context);
+        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
      * @Override
      */
     public function execute() {
-        if (!isset($_COOKIE["ambient"])) {
-            die;
-        }
-        $arg = array('MODO' => $_COOKIE["ambient"],
-                    'COMMERCE_CODE' => $_COOKIE["storeID"],
-                    'PUBLIC_CERT' => $_COOKIE["certificate"],
-                    'PRIVATE_KEY' => $_COOKIE["secretCode"],
-                    'WEBPAY_CERT' => $_COOKIE["certificateTransbank"],
-                    'ECOMMERCE' => 'magento');
-        $document = $_COOKIE["document"];
 
-        setcookie("ambient", "", time()-3600, '/');
-        setcookie("storeID", "", time()-3600, '/');
-        setcookie("certificate", "", time()-3600, '/');
-        setcookie("secretCode", "", time()-3600, '/');
-        setcookie("certificateTransbank", "", time()-3600, '/');
-        setcookie("document", "", time()-3600, '/');
+        $config = array(
+            "ECOMMERCE" => 'magento',
+            "MODO" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/environment'),
+            "PRIVATE_KEY" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/private_key'),
+            "PUBLIC_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/public_cert'),
+            "WEBPAY_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/webpay_cert'),
+            "COMMERCE_CODE" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code')
+        );
 
-        unset($_COOKIE['ambient']);
-        unset($_COOKIE['storeID']);
-        unset($_COOKIE['certificate']);
-        unset($_COOKIE['secretCode']);
-        unset($_COOKIE['certificateTransbank']);
-        unset($_COOKIE['document']);
-
-        $healthcheck = new HealthCheck($arg);
+        $healthcheck = new HealthCheck($config);
         $json = $healthcheck->printFullResume();
         $temp = json_decode($json);
+
+        $document = $_GET["document"];
         if ($document == "report") {
             unset($temp->php_info);
         } else {

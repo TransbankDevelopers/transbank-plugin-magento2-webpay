@@ -11,12 +11,12 @@ class ReportPdfLog{
     }
 
     function getReport($myJSON){
-        $log = new LogHandler();
-        $json = json_decode($log->getLastLog(),true);
+        $logHandler = new LogHandler();
+        $data = $logHandler->getLastLog();
         $obj = json_decode($myJSON,true);
-        if (isset($json['log_content']) && $this->document == 'report'){
-            $html = str_replace("\r\n","<br>",$json['log_content']);
-            $html = str_replace("\n","<br>",$json['log_content']);
+        if (isset($data['log_content']) && $this->document == 'report'){
+            $html = str_replace("\r\n","<br>",$data['log_content']);
+            $html = str_replace("\n","<br>",$data['log_content']);
             $text = explode ("<br>" ,$html);
             $html='';
             foreach ($text as $row){

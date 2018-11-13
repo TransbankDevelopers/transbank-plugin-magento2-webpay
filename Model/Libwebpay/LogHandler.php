@@ -88,7 +88,7 @@ class LogHandler {
     }
 
     public function getValidateLockFile() {
-        if (! file_exists($this->lockfile)) {
+        if (!file_exists($this->lockfile)) {
             $result = array(
                 'status' => false,
                 'lock_file' => basename($this->lockfile),
@@ -234,70 +234,50 @@ class LogHandler {
     /**Funciones de retorno**/
 
     // Obtiene archivo de bloqueo
-    public function getLockFile() {
-        return json_encode($this->getValidateLockFile());
+    private function getLockFile() {
+        return $this->getValidateLockFile();
     }
 
     // obtiene directorio de log
-    public function getLogDir() {
-        return json_encode($this->setLogDir());
+    private function getLogDir() {
+        return $this->setLogDir();
     }
 
     // obtiene conteo de logs en logdir definido
-    public function getLogCount() {
-        return json_encode($this->setLogCount());
+    private function getLogCount() {
+        return $this->setLogCount();
     }
 
     // obtiene listado de logs en logdir
-    public function getLogList() {
-        return json_encode($this->setLogList());
+    private function getLogList() {
+        return $this->setLogList();
     }
 
     // obtiene ultimo log modificado (al crearse con timestamp es tambien el ultimo creado)
     public function getLastLog() {
-        return json_encode($this->setLastLog());
+        return $this->setLastLog();
     }
 
     // obtiene conteo de lineas de ultimo log creado
-    public function getLastLogCountLines() {
-        return json_encode($this->setLastLogCountLines());
+    private function getLastLogCountLines() {
+        return $this->setLastLogCountLines();
     }
 
     // obtiene log en base a parametro
-    public function getLogByFile($filename) {
-        return json_encode($this->readLogByFile($filename));
+    private function getLogByFile($filename) {
+        return $this->readLogByFile($filename);
     }
 
     // obtiene conteo de lineas de log en base a parametro
-    public function getCountLogByFile($filename) {
-        return json_encode($this->setCountLogByFile($filename));
+    private function getCountLogByFile($filename) {
+        return $this->setCountLogByFile($filename);
     }
 
-    // escribe en log
-    public function writeLog($method, $id = null, $request, $response = null, $info = true) {
-        $status = $this->getValidateLockFile();
-        if ($method == 'initTransaction') {
-            $cookie_value = (string)$id;
-            setcookie('buyorder', $cookie_value, time() + 30, "/"); // 86400 = 1 day
-        } elseif ($method == 'acknowledgeTransaction' and isset($_COOKIE['buyorder'])) {
-            $id = $_COOKIE['buyorder'];
-        }
-        $args = array(
-            'method' => $method,
-            'transactionId' => (string)$id,
-            'request' => json_encode($request),
-            'response' => json_encode($response)
-        );
-        if ($status['status'] === true) {
-            $this->setLogNewLine($args, $info);
-        }
-    }
-
-    public function delLogsFromDir() {
+    private function delLogsFromDir() {
         $this->delAllLogs();
     }
 
-    public function delKeepOnlyLastLogs() {
+    private function delKeepOnlyLastLogs() {
         $this->digestLogs();
     }
 
@@ -321,7 +301,7 @@ class LogHandler {
         return $result;
     }
 
-    public function log($msg, $priority = 'debug') {
+    private function log($msg, $priority = 'debug') {
         switch ($priority) {
             case 'error':
                 $prior = \Zend\Log\Logger::ERR;
@@ -344,7 +324,7 @@ class LogHandler {
      */
     public function logDebug($msg) {
         if (self::LOG_DEBUG_ENABLED) {
-            $this->logger->log($msg, 'debug');
+            $this->log($msg, 'debug');
         }
     }
 
@@ -353,7 +333,7 @@ class LogHandler {
      */
     public function logInfo($msg) {
         if (self::LOG_INFO_ENABLED) {
-            $this->logger->log($msg, 'info');
+            $this->log($msg, 'info');
         }
     }
 
@@ -362,7 +342,7 @@ class LogHandler {
      */
     public function logError($msg) {
         if (self::LOG_ERROR_ENABLED) {
-            $this->logger->log($msg, 'error');
+            $this->log($msg, 'error');
         }
     }
 }
