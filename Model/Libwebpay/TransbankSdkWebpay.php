@@ -1,4 +1,6 @@
 <?php
+namespace Transbank\Webpay\Model\Libwebpay;
+
 use Transbank\Webpay\Model\Libwebpay\LogHandler;
 use Transbank\Webpay\Configuration;
 use Transbank\Webpay\Webpay;
