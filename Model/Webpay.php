@@ -3,7 +3,7 @@ namespace Transbank\Webpay\Model;
 
 class Webpay extends \Magento\Payment\Model\Method\AbstractMethod {
 
-    const CODE = 'transbank_webpay';
+    const CODE = 'webpay';
 
     /**
      * Payment code
@@ -15,7 +15,7 @@ class Webpay extends \Magento\Payment\Model\Method\AbstractMethod {
     /**
      * Array of currency support
      */
-    protected $_supportedCurrencyCodes = array('CLP');
+    protected $_supportedCurrencyCodes = array('USD', 'CLP');
 
     //protected $_isOffline = false;
     protected $_isGateway = true;

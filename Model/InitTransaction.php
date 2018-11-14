@@ -38,18 +38,18 @@ class InitTransaction implements ConfigProviderInterface {
 	private function initTransaction() {
 		try {
 
-			$entityId = (string)$getData["entity_id"];
+            $data = $this->_cart->getQuote()->getData();
+			$entityId = (string)$data["entity_id"];
 
 			/*
 			Se reserva orden de compra.
 			*/
 			$reservBuyOrder=$this->_session->getQuote()->reserveOrderId();
-			$ORDEN_PRE=$this->_session->getQuote()->getReservedOrderId();
-			$saveReserveBuyOrder=$this->_session->getQuote()->setReservedOrderId($ORDEN_PRE)->save();
+			$reservedOrderId=$this->_session->getQuote()->getReservedOrderId();
+			$saveReserveBuyOrder=$this->_session->getQuote()->setReservedOrderId($reservedOrderId)->save();
 			$orderId=$this->_session->getQuote()->getReservedOrderId();
 			$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 			$order = $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
-			$getData = $this->_cart->getQuote()->getData();
 			$grandTotal = round($this->_cart->getQuote()->getGrandTotal());
 
 			// enviar parametros a variable de sesion para recuperar

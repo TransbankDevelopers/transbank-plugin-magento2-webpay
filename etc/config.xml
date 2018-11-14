@@ -3,12 +3,9 @@
 	<default>
 		<payment>
 			<webpay>
-				<payment_action>true</payment_action>
-				<model>Transbank\Webpay\Model\Payment\Webpay</model>
-				<active>0</active>
+                <active>1</active>
+				<model>Transbank\Webpay\Model\Webpay</model>
 				<title>Webpay</title>
-				<main_parameters>
-				</main_parameters>
 				<security_parameters>
 					<private_key>-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAvuNgBxMAOBlNI7Fw5sHGY1p6DB6EMK83SL4b1ZILSJs/8/MC
