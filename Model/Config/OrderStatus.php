@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Config\Source;
+namespace Transbank\Webpay\Model\Config;
 
 class OrderStatus implements \Magento\Framework\Option\ArrayInterface {
 
@@ -22,7 +22,11 @@ class OrderStatus implements \Magento\Framework\Option\ArrayInterface {
      * @return array
      */
     public function toArray() {
-        return ['processing' => __('processing'),'pending_payment' => __('pending_payment'),'payment_review' => __('payment_review'),'complete' => __('complete'),'canceled' => __('canceled')];
+        return ['processing' => __('processing'),
+                'pending_payment' => __('pending_payment'),
+                'payment_review' => __('payment_review'),
+                'complete' => __('complete'),
+                'canceled' => __('canceled')];
     }
 
 }

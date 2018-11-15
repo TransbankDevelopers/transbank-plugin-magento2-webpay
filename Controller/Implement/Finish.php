@@ -1,86 +1,102 @@
 <?php
 namespace Transbank\Webpay\Controller\Implement;
 
+use Transbank\Webpay\Model\Libwebpay\LogHandler;
+
 class Finish extends \Magento\Framework\App\Action\Action {
+
+    private $paymentTypeCodearray = array(
+        "VD" => "Venta Debito",
+        "VN" => "Venta Normal",
+        "VC" => "Venta en cuotas",
+        "SI" => "3 cuotas sin interés",
+        "S2" => "2 cuotas sin interés",
+        "NC" => "N cuotas sin interés",
+    );
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Checkout\Model\Session $session,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig) {
-        $this->_session = $session;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_messageManager = $context->getMessageManager();
+        \Transbank\Webpay\Model\Config\ConfigProvider $configProvider) {
+
         parent::__construct($context);
+
+        $this->_session = $session;
+        $this->_messageManager = $context->getMessageManager();
+        $this->_configProvider = $configProvider;
+
+        $this->_logHandler = new LogHandler();
     }
 
     /**
      * @Override
      */
     public function execute() {
-        $result = $this->_session->getResultWebpay();
-        $result = $_POST;
-        if(array_key_exists('TBK_ORDEN_COMPRA',$result)){
-            $result = $_POST;
-            $response = $this->annulled($result);
-            $this->_messageManager->addError(__($response));
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $orderDatamodel = $objectManager->get('Magento\Sales\Model\Order')->getCollection()->getLastItem();
-            $orderId = $orderDatamodel->getId();
-            $order = $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
-            $payError = $this->_scopeConfig->getValue('payment/webpay/security_parameters/error_pay');
-            $order->setState($payError)->setStatus($payError);
-            $order->save();
+
+        if (!isset($_POST['token_ws'])) {
+            $tokenWs = $_GET['token_ws'];
         } else {
+            $tokenWs = $_POST['token_ws'];
+        }
+
+        $this->_logHandler->logInfo('4- finish token: ' . $tokenWs . ', ' . $this->_session->getTokenWs());
+
+        if($tokenWs == $this->_session->getTokenWs()){
             $result = $this->_session->getResultWebpay();
-            if (($result['VCI'] == 'TSY' || $result['VCI'] == 'A'  || $result['VCI'] == "") && $result['detailOutput']['responseCode'] == 0) {
+
+            $this->_logHandler->logInfo('5- result: ' . json_encode($result));
+
+            if (isset($result->buyOrder) && isset($result->detailOutput) && $result->detailOutput->responseCode == 0) {
                 $response = $this->authorized($result);
                 $this->_messageManager->addSuccess(__($response));
             }else{
-                $result = $_POST;
                 $response = $this->reject($result);
                 $this->_messageManager->addError(__($response));
             }
         }
 
+        $this->_logHandler->logInfo('6- response: ' . $response);
+
         return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
     }
 
-    public function authorized($result) {
-		$message = "<img src='https://www.transbank.cl/public/img/Logo_Webpay3-01-50x50.png' alt='WebPay' title='WebPay' align='middle' style='border: 1px solid #EEEEEE;' /><h2>Detalles del Pago</h2>
+    private function authorized($result) {
+
+        if($result->detailOutput->paymentTypeCode == "SI" || $result->detailOutput->paymentTypeCode == "S2" ||
+            $result->detailOutput->paymentTypeCode == "NC" || $result->detailOutput->paymentTypeCode == "VC" ) {
+            $tipo_cuotas = $this->paymentTypeCodearray[$result->detailOutput->paymentTypeCode];
+        } else {
+            $tipo_cuotas = "Sin cuotas";
+        }
+
+        $this->_logHandler->logInfo('tipo_cuotas: ' . $tipo_cuotas);
+
+		$message = "<h2>Detalles del Pago</h2>
         <p>
-        <br>
-        <b>Respuesta de la Transacci&oacute;n: </b>{$result['detailOutput']['responseCode']}<br>
-        <b>Monto:</b> $ {$result['detailOutput']['amount']}.-<br>
-        <b>Order de Compra: </b> {$result['detailOutput']['buyOrder']}<br>
-        <b>Fecha de la Transacci&oacute;n: </b>".date('d-m-Y', strtotime($result['transactionDate']))."<br>
-        <b>Hora de la Transacci&oacute;n: </b>".date('H:i:s', strtotime($result['transactionDate']))."<br>
-        <b>Tarjeta: </b>************{$result['cardDetail']['cardNumber']}<br>
-        <b>C&oacute;digo de autorizacion: </b>{$result['detailOutput']['authorizationCode']}
+            <br>
+            <b>Respuesta de la Transacci&oacute;n: </b>{$result->detailOutput->responseCode}<br>
+            <b>Monto:</b> $ {$result->detailOutput->amount}<br>
+            <b>Order de Compra: </b> {$result->detailOutput->buyOrder}<br>
+            <b>Fecha de la Transacci&oacute;n: </b>".date('d-m-Y', strtotime($result->transactionDate))."<br>
+            <b>Hora de la Transacci&oacute;n: </b>".date('H:i:s', strtotime($result->transactionDate))."<br>
+            <b>Tarjeta: </b>************{$result->cardDetail->cardNumber}<br>
+            <b>C&oacute;digo de autorizacion: </b>{$result->detailOutput->authorizationCode}<br>
+            <b>N&uacute;mero de cuotas: </b>{$tipo_cuotas}
         </p>";
         return $message;
     }
 
-    public function reject($result) {
-        $message =  "<img src='https://www.transbank.cl/public/img/Logo_Webpay3-01-50x50.png' alt='WebPay' title='WebPay' align='middle' style='border: 1px solid #EEEEEE;' /> <h2>Transacci&oacute;n Rechazada</h2>
+    private function reject($result) {
+        $message = "<h2>Transacci&oacute;n Rechazada</h2>
         <p>
             <br>
-            <b>Respuesta de la Transacci&oacute;n: </b>{$result['responseCode']}<br>
-            <b>Monto:</b> $ {$result['amount']}.-<br>
-            <b>Order de Compra: </b> {$result['buyOrder']}<br>
-            <b>Fecha de la Transacci&oacute;n: </b>".date('d-m-Y', strtotime($result['transactionDate']))."<br>
-            <b>Hora de la Transacci&oacute;n: </b>".date('H:i:s', strtotime($result['transactionDate']))."<br>
-            <b>Tarjeta: </b>************{$result['cardNumber']}<br>
-            <b>Mensaje de Rechazo: </b>{$result['responseDescription']}
-        </p>";
-        return $message;
-    }
-
-    public function annulled($result) {
-        $message =  "<img src='https://www.transbank.cl/public/img/Logo_Webpay3-01-50x50.png' alt='WebPay' title='WebPay' align='middle' style='border: 1px solid #EEEEEE;' /> <h2>Transacci&oacute;n Rechazada</h2>
-        <p>
-            <br>
-            <b>Respuesta de la Transacci&oacute;n: Transacci&oacute;n cancelada por cliente </b><br>
-            <b>Order de Compra: </b> {$result['TBK_ORDEN_COMPRA']}<br>
+            <b>Respuesta de la Transacci&oacute;n: </b>{$result->detailOutput->responseCode}<br>
+            <b>Monto:</b> $ {$result->detailOutput->amount}<br>
+            <b>Order de Compra: </b> {$result->detailOutput->buyOrder}<br>
+            <b>Fecha de la Transacci&oacute;n: </b>".date('d-m-Y', strtotime($result->transactionDate))."<br>
+            <b>Hora de la Transacci&oacute;n: </b>".date('H:i:s', strtotime($result->transactionDate))."<br>
+            <b>Tarjeta: </b>************{$result->cardDetail->cardNumber}<br>
+            <b>Mensaje de Rechazo: </b>{$result->responseDescription}
         </p>";
         return $message;
     }

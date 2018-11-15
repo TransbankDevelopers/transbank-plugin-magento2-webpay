@@ -1,47 +1,37 @@
 <?php
 namespace Transbank\Webpay\Block\System\Config;
 
-use Magento\Backend\Block\Template\Context;
-use Magento\Config\Block\System\Config\Form\Field;
-use Magento\Framework\Data\Form\Element\AbstractElement;
 use Transbank\Webpay\Model\Libwebpay\HealthCheck;
 use Transbank\Webpay\Model\Libwebpay\LogHandler;
 
-class TbkButton extends Field {
+class TbkButton extends \Magento\Config\Block\System\Config\Form\Field {
 
     /**
      * @var string
      */
     protected $_template = 'system/config/button.phtml';
 
-    /**
-     * @param Context $context
-     * @param array $data
-     */
-    public function __construct(Context $context, array $data = [] ) {
-        parent::__construct($context, $data);
-        $this->context = $context;
+    public function __construct(
+        \Magento\Backend\Block\Template\Context $context,
+        \Transbank\Webpay\Model\Config\ConfigProvider $configProvider) {
 
-        $this->config = array(
-            "ECOMMERCE" => 'magento',
-            "MODO" =>  $this->_scopeConfig->getValue('payment/webpay/security_parameters/environment'),
-            "PRIVATE_KEY" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/private_key'),
-            "PUBLIC_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/public_cert'),
-            "WEBPAY_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/webpay_cert'),
-            "COMMERCE_CODE" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code')
-        );
+        parent::__construct($context);
+        $this->_context = $context;
+        $this->_configProvider = $configProvider;
 
-        $healthcheck = new HealthCheck($this->config);
+        $config = $this->_configProvider->getConfig();
+
+        $healthcheck = new HealthCheck($config);
         $datos_hc = json_decode($healthcheck->printFullResume());
 
         $logHandler = new LogHandler();
         $resume = $logHandler->getResume();
 
         $this->tbk_data = array(
-            'url_request' => $this->context->getUrlBuilder()->getUrl("admin_webpay/Request/index"),
-            'url_call_log_handler' => $this->context->getUrlBuilder()->getUrl("admin_webpay/CallLogHandler/index"),
-            'url_create_pdf_report' => $this->context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=report',
-            'url_create_pdf_php_info' => $this->context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=php_info',
+            'url_request' => $this->_context->getUrlBuilder()->getUrl("admin_webpay/Request/index"),
+            'url_call_log_handler' => $this->_context->getUrlBuilder()->getUrl("admin_webpay/CallLogHandler/index"),
+            'url_create_pdf_report' => $this->_context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=report',
+            'url_create_pdf_php_info' => $this->_context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=php_info',
             'cert_vs_private' =>$datos_hc->validate_certificates->consistency->cert_vs_private_key,
             'commerce_code_validate' => $datos_hc->validate_certificates->consistency->commerce_code_validate,
             'subject_commerce_code' => $datos_hc->validate_certificates->cert_info->subject_commerce_code,
@@ -91,7 +81,7 @@ class TbkButton extends Field {
      * @param  AbstractElement $element
      * @return string
      */
-    protected function _getElementHtml(AbstractElement $element) {
+    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element) {
         return $this->_toHtml();
     }
 }

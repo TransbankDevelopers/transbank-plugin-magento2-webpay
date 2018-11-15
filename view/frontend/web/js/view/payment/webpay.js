@@ -8,7 +8,7 @@ define(
         'use strict';
         rendererList.push(
             {
-                type: 'webpay',
+                type: 'transbank_webpay',
                 component: 'Transbank_Webpay/js/view/payment/method-renderer/webpay-method'
             }
         );
@@ -16,3 +16,4 @@ define(
         return Component.extend({});
     }
 );
+

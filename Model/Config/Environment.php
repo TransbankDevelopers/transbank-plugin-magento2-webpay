@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Config\Source;
+namespace Transbank\Webpay\Model\Config;
 
 class Environment implements \Magento\Framework\Option\ArrayInterface {
 
@@ -19,6 +19,7 @@ class Environment implements \Magento\Framework\Option\ArrayInterface {
      * @return array
      */
     public function toArray() {
-        return ['INTEGRACION' => __('INTEGRACION'),  'PRODUCCION' => __('PRODUCCION')];
+        return ['INTEGRACION' => __('INTEGRACION'),
+                'PRODUCCION' => __('PRODUCCION')];
     }
 }

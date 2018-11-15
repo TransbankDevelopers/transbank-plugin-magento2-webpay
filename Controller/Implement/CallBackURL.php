@@ -2,31 +2,20 @@
 namespace Transbank\Webpay\Controller\Implement;
 
 use Transbank\Webpay\Model\Libwebpay\TransbankSdkWebpay;
+use Transbank\Webpay\Model\Libwebpay\LogHandler;
 
 class CallBackURL extends \Magento\Framework\App\Action\Action {
 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Checkout\Model\Session $session,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManager) {
+        \Transbank\Webpay\Model\Config\ConfigProvider $configProvider) {
 
-        $this->_session = $session;
-        $this->_scopeConfig = $scopeConfig;
-        $this->_storeManager = $storeManager;
-        $this->_messageManager = $context->getMessageManager();
         parent::__construct($context);
 
-        $this->config = array(
-            "ECOMMERCE" => "magento",
-            "MODO" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/environment'),
-            "PRIVATE_KEY" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/private_key'),
-            "PUBLIC_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/public_cert'),
-            "WEBPAY_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/webpay_cert'),
-            "COMMERCE_CODE" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code'),
-            "URL_RETURN" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/CallBackURL",
-            "URL_FINAL" => $this->_storeManager->getStore()->getBaseUrl()."webpay/Implement/Finish"
-        );
+        $this->_session = $session;
+        $this->_messageManager = $context->getMessageManager();
+        $this->_configProvider = $configProvider;
     }
 
     /**
@@ -35,57 +24,53 @@ class CallBackURL extends \Magento\Framework\App\Action\Action {
     public function execute() {
 
         if (!isset($_POST['token_ws'])) {
-            $token = $_GET['token_ws'];
+            $tokenWs = $_GET['token_ws'];
         } else {
-            $token = $_POST['token_ws'];
+            $tokenWs = $_POST['token_ws'];
         }
+
+        $grandTotal = $this->_session->getGrandTotal();
+        $entityId = $this->_session->getEntityId();
+        $orderId = $this->_session->getOrderId();
+
+        $logHandler = new LogHandler();
+        $logHandler->logInfo('2- orderId: ' . $orderId . ', grandTotal: ' . $grandTotal . ', entityId: ' . $entityId);
 
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $orderDatamodel = $objectManager->get('Magento\Sales\Model\Order')->getCollection()->getLastItem();
         $orderId = $orderDatamodel->getId();
         $order = $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
 
-        $this->_session->setToken($token);
-
         $result = array();
 
+        $config = $this->_configProvider->getConfig();
+
         try {
-            $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
-            $result = $transbankSdkWebpay->commitTransaction($token);
+            $transbankSdkWebpay = new TransbankSdkWebpay($config);
+            $result = $transbankSdkWebpay->commitTransaction($tokenWs);
         } catch (Exception $e) {
-            $result[] = 'Error!:';
-            $result[] = $e;
+            $logHandler->logError('Error en confirmar transaccion: ' . $e->getMessage());
         }
 
-        $paySucefully = $this->_scopeConfig->getValue('payment/webpay/security_parameters/sucefully_pay');
-        $payError = $this->_scopeConfig->getValue('payment/webpay/security_parameters/error_pay');
+        $logHandler->logInfo('3- result: ' . json_encode($result));
 
-        $result = json_decode(json_encode($result), true);
-
-        if (($result['VCI'] == 'TSY' ||$result['VCI'] == 'A' || $result['VCI'] == "") && $result['detailOutput']['responseCode'] == 0) {
+        if (isset($result->buyOrder) && isset($result->detailOutput) && $result->detailOutput->responseCode == 0) {
             $this->_session->setResultWebpay($result);
-            $order->setState($paySucefully)->setStatus($paySucefully);
+            $orderStatus = $config['sucefully_pay'];
+            $order->setState($orderStatus)->setStatus($orderStatus);
             $order->save();
             $this->_session->getQuote()->setIsActive(false)->save();
-            $this->redirect($result['urlRedirection'],array('token_ws' => $token));
+            $this->toRedirect($result->urlRedirection, array('token_ws' => $tokenWs));
         } else {
-            $this->_session->setResultWebpay($result);
-            $order->setState($payError)->setStatus($payError);
+            $orderStatus = $config['error_pay'];
+            $order->setState($orderStatus)->setStatus($orderStatus);
             $order->save();
-            $send = array(
-                'responseCode' => $result['detailOutput']['responseCode'],
-                'responseDescription' => $result['detailOutput']['responseDescription'],
-                'amount' => $result['detailOutput']['amount'],
-                'transactionDate' => $result['transactionDate'],
-                'cardNumber' => $result['cardDetail']['cardNumber'],
-                'buyOrder' => $result['buyOrder']
-            );
-            $this->redirect($result['urlRedirection'], $send);
             $this->_session->restoreQuote();
+            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
     }
 
-    public function redirect($url, $data) {
+    private function toRedirect($url, $data) {
         echo "<form action='$url' method='POST' name='webpayForm'>";
         foreach ($data as $name => $value) {
             echo "<input type='hidden' name='".htmlentities($name)."' value='".htmlentities($value)."'>";

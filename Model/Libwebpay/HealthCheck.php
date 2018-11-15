@@ -1,15 +1,8 @@
 <?php
 namespace Transbank\Webpay\Model\Libwebpay;
 
-use Transbank\Webpay\Model\Libwebpay\WebpayNormal;
-use \Magento\Framework\App\ObjectManager;
-
-/**
- * NOTE:llamar clase igual que archivo fisico
- */
 class HealthCheck {
 
-    public $phpinfo;
     public $publicCert;
     public $privateKey;
     public $webpayCert;
@@ -21,7 +14,6 @@ class HealthCheck {
     public $fullResume;
     public $certficados;
     public $ecommerce;
-    public $nusoap;
     public $testurl;
 
     public function __construct($config) {
@@ -37,7 +29,6 @@ class HealthCheck {
         $config['URL_RETURN'] = $this->testurl."?action=return";
         $config['URL_FINAL'] = $this->testurl."?action=final";
 
-        $this->extensions = null;
         $this->resume = null;
         $this->fullResume = null;
         $this->versioninfo = null;
@@ -51,8 +42,6 @@ class HealthCheck {
             'mcrypt',
             'dom',
         );
-
-        $this->soap = new \SoapClient("http://www.cumbregroup.com/tbk-webservice/PluginVersion.php?wsdl");
     }
 
   // validaciones
@@ -269,19 +258,7 @@ class HealthCheck {
     }
 
     private function setpostinstall() {
-        $args = $this->getEcommerceInfo($this->ecommerce);
-        $vars = array('cod_commerce' => $this->commerceCode,
-            'version_plugin' => $args['current_plugin_version'],
-            'version_ecommerce' => $args['current_ecommerce_version'],
-            'ecommerce' => $this->ecommerce,
-            'ambient' => $this->environment,
-            'product' =>'1');
-        $this->result = $this->soap->__soapCall('version_register', $vars);
-        if (strpos($this->result, 'Error') === true) {
-            return false;
-        } else {
-            return true;
-        }
+        return false;
     }
 
     //funciones de impresion

@@ -8,9 +8,9 @@ class Index extends \Magento\Backend\App\Action {
 
     public function __construct(
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig) {
+        \Transbank\Webpay\Model\Config\ConfigProvider $configProvider) {
         parent::__construct($context);
-        $this->_scopeConfig = $scopeConfig;
+        $this->_configProvider = $configProvider;
     }
 
     /**
@@ -18,14 +18,7 @@ class Index extends \Magento\Backend\App\Action {
      */
     public function execute() {
 
-        $config = array(
-            "ECOMMERCE" => 'magento',
-            "MODO" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/environment'),
-            "PRIVATE_KEY" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/private_key'),
-            "PUBLIC_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/public_cert'),
-            "WEBPAY_CERT" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/webpay_cert'),
-            "COMMERCE_CODE" => $this->_scopeConfig->getValue('payment/webpay/security_parameters/commerce_code')
-        );
+        $config = $this->_configProvider->getConfig();
 
         $healthcheck = new HealthCheck($config);
         $json = $healthcheck->printFullResume();

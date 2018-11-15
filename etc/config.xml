@@ -1,12 +1,15 @@
 <?xml version="1.0" ?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
-	<default>
-		<payment>
-			<webpay>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <transbank_webpay>
                 <active>1</active>
-				<model>Transbank\Webpay\Model\Webpay</model>
-				<title>Webpay</title>
-				<security_parameters>
+                <model>Transbank\Webpay\Model\Webpay</model>
+                <order_status>pending</order_status>
+                <title>Webpay</title>
+                <allowspecific>0</allowspecific>
+                <security_parameters>
 					<private_key>-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAvuNgBxMAOBlNI7Fw5sHGY1p6DB6EMK83SL4b1ZILSJs/8/MC
 X8Pkys3CvJmSIiKU7fnWkgXchEdqXJV+tzgoED/y99tXgoMssi0ma+u9YtPvpT7B
@@ -85,7 +88,7 @@ MX5lzVXafBH/sPd545fBH2J3xAY3jtP764G4M8JayOFzGB0=
 	                <error_pay>canceled</error_pay>
 					<order_status>pending</order_status>
 				</security_parameters>
-			</webpay>
-		</payment>
-	</default>
+            </transbank_webpay>
+        </payment>
+    </default>
 </config>
