@@ -40,9 +40,9 @@ class TransbankSdkWebpay {
 					"token_ws" => $initResult->token
 				);
             } else {
-                throw new Exception("No se ha creado la transacción");
+                throw new \Exception("No se ha creado la transacción");
             }
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
             $result = array(
                 "error" => 'Error conectando a Webpay',
                 "detail" => $e->getMessage()

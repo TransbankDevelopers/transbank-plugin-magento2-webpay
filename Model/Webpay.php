@@ -15,7 +15,7 @@ class Webpay extends \Magento\Payment\Model\Method\AbstractMethod {
     /**
      * Array of currency support
      */
-    protected $_supportedCurrencyCodes = array('USD', 'CLP');
+    protected $_supportedCurrencyCodes = array('CLP');
 
     protected $_isGateway = true;
     protected $_canCapture = true;
@@ -37,55 +37,34 @@ class Webpay extends \Magento\Payment\Model\Method\AbstractMethod {
         return true;
     }
 
-    /**
-     * Authorize payment abstract method
-     *
-     * @param \Magento\Framework\DataObject|InfoInterface $payment
-     * @param float $amount
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @api
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
-    {
-        if (!$this->canAuthorize()) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('The authorize action is not available.'));
-        }
-        return $this;
-    }
-    /**
-     * Capture payment abstract method
-     *
-     * @param \Magento\Framework\DataObject|InfoInterface $payment
-     * @param float $amount
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @api
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
-    {
+    public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount) {
+
         if (!$this->canCapture()) {
             throw new \Magento\Framework\Exception\LocalizedException(__('The capture action is not available.'));
         }
+
+        //$metadata = $payment->getData()['additional_information'][\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS];
+        //$payment->setTransactionId($metadata['externalUniqueNumber']);
+        //$payment->setIsTransactionClosed(0);
+
         return $this;
     }
-    /**
-     * Refund specified amount for payment
-     *
-     * @param \Magento\Framework\DataObject|InfoInterface $payment
-     * @param float $amount
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @api
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
-    {
+
+    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount) {
+
+        if (!$this->canAuthorize()) {
+            throw new \Magento\Framework\Exception\LocalizedException(__('The authorize action is not available.'));
+        }
+
+        return $this;
+    }
+
+    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount) {
+
         if (!$this->canRefund()) {
             throw new \Magento\Framework\Exception\LocalizedException(__('The refund action is not available.'));
         }
+
         return $this;
     }
 }

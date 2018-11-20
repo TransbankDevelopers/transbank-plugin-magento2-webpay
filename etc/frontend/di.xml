@@ -3,7 +3,7 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="transbank_webpay_config_provider" xsi:type="object">Transbank\Webpay\Model\WebpayInitTransaction</item>
+                <item name="transbank_webpay_config_provider" xsi:type="object">Transbank\Webpay\Model\Config\ConfigProvider</item>
             </argument>
         </arguments>
     </type>

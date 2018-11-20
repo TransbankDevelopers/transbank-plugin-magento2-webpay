@@ -25,6 +25,7 @@ define(
             defaults: {
                 template: 'Transbank_Webpay/payment/webpay'
             },
+
             getCode: function() {
               return 'transbank_webpay';
             },
@@ -33,19 +34,26 @@ define(
             },
             placeOrder: function() {
 
-                var result = window.checkoutConfig.webpayInitTransaction;
+                var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
 
-                if (result != undefined && result.token_ws != undefined){
-
-                    var form = $('<form action="' + result.url + '" method="post">' +
-                                '<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
-                                '</form>');
-                    $('body').append(form);
-                    form.submit();
-
-                } else {
-                    location.reload();
+                if (quote.guestEmail) {
+                    url+='?guestEmail=' + encodeURIComponent(quote.guestEmail);
                 }
+
+                $.getJSON(url, function(result) {
+
+                    if (result != undefined && result.token_ws != undefined){
+
+                        var form = $('<form action="' + result.url + '" method="post">' +
+                                    '<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
+                                    '</form>');
+                        $('body').append(form);
+                        form.submit();
+
+                    } else {
+                        alert('Error al crear transacción');
+                    }
+                });
             }
         })
     }
