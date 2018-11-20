@@ -1,7 +1,7 @@
 <?php
 namespace Transbank\Webpay\Controller\Adminhtml\CallLogHandler;
 
-use Transbank\Webpay\Model\Libwebpay\LogHandler;
+use Transbank\Webpay\Model\LogHandler;
 
 class Index extends \Magento\Backend\App\Action {
 
@@ -13,12 +13,12 @@ class Index extends \Magento\Backend\App\Action {
      * @Override
      */
     public function execute() {
-        $logHandler = new LogHandler();
+        $log = new LogHandler();
         if ($_POST["action_check"] == 'true') {
-            $logHandler->setLockStatus(true);
-            $logHandler->setparamsconf($_POST['days'], $_POST['size']);
+            $log->setLockStatus(true);
+            $log->setparamsconf($_POST['days'], $_POST['size']);
         } else {
-            $logHandler->setLockStatus(false);
+            $log->setLockStatus(false);
         }
     }
 }

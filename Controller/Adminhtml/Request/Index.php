@@ -1,7 +1,7 @@
 <?php
 namespace Transbank\Webpay\Controller\Adminhtml\Request;
 
-use Transbank\Webpay\Model\Libwebpay\HealthCheck;
+use Transbank\Webpay\Model\HealthCheck;
 
 class Index extends \Magento\Backend\App\Action {
 
@@ -9,7 +9,7 @@ class Index extends \Magento\Backend\App\Action {
         \Magento\Backend\App\Action\Context $context,
         \Transbank\Webpay\Model\Config\ConfigProvider $configProvider) {
         parent::__construct($context);
-        $this->_configProvider = $configProvider;
+        $this->configProvider = $configProvider;
     }
 
     /**
@@ -19,7 +19,7 @@ class Index extends \Magento\Backend\App\Action {
         if($_POST['type'] == 'checkInit') {
             try {
 
-                $config = $this->_configProvider->getConfig();
+                $config = $this->configProvider->getPluginConfig();
                 $healthcheck = new HealthCheck($config);
                 $response = $healthcheck->getInitTransaction();
 

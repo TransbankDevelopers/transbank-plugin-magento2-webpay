@@ -1,7 +1,7 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay;
+namespace Transbank\Webpay\Model;
 
-use Transbank\Webpay\Model\Libwebpay\LogHandler;
+use Transbank\Webpay\Model\LogHandler;
 use Transbank\Webpay\Configuration;
 use Transbank\Webpay\Webpay;
 
@@ -52,9 +52,18 @@ class TransbankSdkWebpay {
     }
 
     public function commitTransaction($tokenWs) {
-        if ($tokenWs == null) {
-            throw new Exception("El token webpay es requerido");
+        $result = array();
+        try {
+            if ($tokenWs == null) {
+                throw new \Exception("El token webpay es requerido");
+            }
+            return $this->transaction->getTransactionResult($tokenWs);
+        } catch(\Exception $e) {
+            $result = array(
+                "error" => 'Error conectando a Webpay',
+                "detail" => $e->getMessage()
+            );
         }
-        return $this->transaction->getTransactionResult($tokenWs);
+        return $result;
     }
 }

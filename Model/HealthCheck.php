@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay;
+namespace Transbank\Webpay\Model;
 
 class HealthCheck {
 

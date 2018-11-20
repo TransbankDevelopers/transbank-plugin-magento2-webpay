@@ -1,13 +1,13 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF;
+namespace Transbank\Webpay\Model\tcpdf\TCPDF;
 require_once(dirname(__FILE__).'/tcpdf_autoconfig.php');
 
 
-use Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes\TCPDFSTATIC as TSTA;
-use Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes\TCPDFFONTS as TFON;
-use Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes\TCPDFFONTDATA as TFOND;
-use Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes\TCPDFCOLORS as TCOL;
-use Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes\TCPDFIMAGES as TIMA;
+use Transbank\Webpay\Model\tcpdf\TCPDF\includes\TCPDFSTATIC as TSTA;
+use Transbank\Webpay\Model\tcpdf\TCPDF\includes\TCPDFFONTS as TFON;
+use Transbank\Webpay\Model\tcpdf\TCPDF\includes\TCPDFFONTDATA as TFOND;
+use Transbank\Webpay\Model\tcpdf\TCPDF\includes\TCPDFCOLORS as TCOL;
+use Transbank\Webpay\Model\tcpdf\TCPDF\includes\TCPDFIMAGES as TIMA;
 class TCPDF
 {
 

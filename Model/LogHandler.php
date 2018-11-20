@@ -1,7 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay;
-
-define('Webpay_ROOT', dirname(__DIR__));
+namespace Transbank\Webpay\Model;
 
 class LogHandler {
 
@@ -18,7 +16,7 @@ class LogHandler {
         $this->reponse = null;
         $this->logFile = null;
         $this->ecommerce = $ecommerce;
-        $this->lockfile = Webpay_ROOT."/set_logs_activate.lock";
+        $this->lockfile = "./set_logs_activate.lock";
         $dia = date('Y-m-d');
         $this->confdays = $days;
         $this->confweight = $weight;

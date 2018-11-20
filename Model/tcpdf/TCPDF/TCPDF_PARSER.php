@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF;
+namespace Transbank\Webpay\Model\tcpdf\TCPDF;
 //============================================================+
 // File name   : tcpdf_parser.php
 // Version     : 1.0.16
@@ -42,7 +42,7 @@ namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF;
  */
 
 // include class for decoding filters
-use Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes\TCPDF_FILTERS;
+use Transbank\Webpay\Model\tcpdf\TCPDF\includes\TCPDF_FILTERS;
 
 /**
  * @class TCPDF_PARSER

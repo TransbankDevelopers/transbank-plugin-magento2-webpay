@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF;
+namespace Transbank\Webpay\Model\tcpdf\TCPDF;
 //============================================================+
 // File name   : tcpdf_import.php
 // Version     : 1.0.001
@@ -44,9 +44,9 @@ namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF;
  */
 
 // include the TCPDF class
-use Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\TCPDF;
+use Transbank\Webpay\Model\tcpdf\TCPDF\TCPDF;
 // include PDF parser class
-use Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\TCPDF_PARSER;
+use Transbank\Webpay\Model\tcpdf\TCPDF\TCPDF_PARSER;
 
 /**
  * @class TCPDF_IMPORT

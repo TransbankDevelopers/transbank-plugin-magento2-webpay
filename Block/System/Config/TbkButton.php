@@ -1,8 +1,8 @@
 <?php
 namespace Transbank\Webpay\Block\System\Config;
 
-use Transbank\Webpay\Model\Libwebpay\HealthCheck;
-use Transbank\Webpay\Model\Libwebpay\LogHandler;
+use Transbank\Webpay\Model\HealthCheck;
+use Transbank\Webpay\Model\LogHandler;
 
 class TbkButton extends \Magento\Config\Block\System\Config\Form\Field {
 
@@ -16,23 +16,21 @@ class TbkButton extends \Magento\Config\Block\System\Config\Form\Field {
         \Transbank\Webpay\Model\Config\ConfigProvider $configProvider) {
 
         parent::__construct($context);
-        $this->_context = $context;
-        $this->_configProvider = $configProvider;
 
-        $config = $this->_configProvider->getConfig();
+        $config = $configProvider->getPluginConfig();
 
         $healthcheck = new HealthCheck($config);
         $datos_hc = json_decode($healthcheck->printFullResume());
 
-        $logHandler = new LogHandler();
-        $resume = $logHandler->getResume();
+        $log = new LogHandler();
+        $resume = $log->getResume();
 
         $this->tbk_data = array(
-            'url_request' => $this->_context->getUrlBuilder()->getUrl("admin_webpay/Request/index"),
-            'url_call_log_handler' => $this->_context->getUrlBuilder()->getUrl("admin_webpay/CallLogHandler/index"),
-            'url_create_pdf_report' => $this->_context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=report',
-            'url_create_pdf_php_info' => $this->_context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=php_info',
-            'cert_vs_private' =>$datos_hc->validate_certificates->consistency->cert_vs_private_key,
+            'url_request' => $context->getUrlBuilder()->getUrl("admin_webpay/Request/index"),
+            'url_call_log_handler' => $context->getUrlBuilder()->getUrl("admin_webpay/CallLogHandler/index"),
+            'url_create_pdf_report' => $context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=report',
+            'url_create_pdf_php_info' => $context->getUrlBuilder()->getUrl("admin_webpay/CreatePdf/index") . '?document=php_info',
+            'cert_vs_private' => $datos_hc->validate_certificates->consistency->cert_vs_private_key,
             'commerce_code_validate' => $datos_hc->validate_certificates->consistency->commerce_code_validate,
             'subject_commerce_code' => $datos_hc->validate_certificates->cert_info->subject_commerce_code,
             'cert_version' => $datos_hc->validate_certificates->cert_info->version,
@@ -44,24 +42,24 @@ class TbkButton extends \Magento\Config\Block\System\Config\Form\Field {
             'init_error_detail' => null, // (isset($datos_hc->validate_init_transaction->response->detail)) ? $datos_hc->validate_init_transaction->response->detail : NULL,
             'init_success_url' => null, // (isset($datos_hc->validate_init_transaction->response->url)) ? $datos_hc->validate_init_transaction->response->url : NULL,
             'init_success_token' => null, //  (isset($datos_hc->validate_init_transaction->response->token_ws)) ? $datos_hc->validate_init_transaction->response->token_ws : NULL,
-            'php_status' =>$datos_hc->server_resume->php_version->status,
-            'php_version' =>$datos_hc->server_resume->php_version->version,
-            'server_version' =>$datos_hc->server_resume->server_version->server_software,
-            'ecommerce' =>$datos_hc->server_resume->plugin_info->ecommerce,
-            'ecommerce_version' =>$datos_hc->server_resume->plugin_info->ecommerce_version,
-            'current_plugin_version' =>$datos_hc->server_resume->plugin_info->current_plugin_version,
-            'last_plugin_version' =>$datos_hc->server_resume->plugin_info->last_plugin_version,
-            'openssl_status' =>$datos_hc->php_extensions_status->openssl->status,
-            'openssl_version' =>$datos_hc->php_extensions_status->openssl->version,
-            'SimpleXML_status' =>$datos_hc->php_extensions_status->SimpleXML->status,
-            'SimpleXML_version' =>$datos_hc->php_extensions_status->SimpleXML->version,
-            'soap_status' =>$datos_hc->php_extensions_status->soap->status,
-            'soap_version' =>$datos_hc->php_extensions_status->soap->version,
-            'mcrypt_status' =>$datos_hc->php_extensions_status->mcrypt->status,
-            'mcrypt_version' =>$datos_hc->php_extensions_status->mcrypt->version,
-            'dom_status' =>$datos_hc->php_extensions_status->dom->status,
-            'dom_version' =>$datos_hc->php_extensions_status->dom->version,
-            'php_info' =>$datos_hc->php_info->string->content,
+            'php_status' => $datos_hc->server_resume->php_version->status,
+            'php_version' => $datos_hc->server_resume->php_version->version,
+            'server_version' => $datos_hc->server_resume->server_version->server_software,
+            'ecommerce' => $datos_hc->server_resume->plugin_info->ecommerce,
+            'ecommerce_version' => $datos_hc->server_resume->plugin_info->ecommerce_version,
+            'current_plugin_version' => $datos_hc->server_resume->plugin_info->current_plugin_version,
+            'last_plugin_version' => $datos_hc->server_resume->plugin_info->last_plugin_version,
+            'openssl_status' => $datos_hc->php_extensions_status->openssl->status,
+            'openssl_version' => $datos_hc->php_extensions_status->openssl->version,
+            'SimpleXML_status' => $datos_hc->php_extensions_status->SimpleXML->status,
+            'SimpleXML_version' => $datos_hc->php_extensions_status->SimpleXML->version,
+            'soap_status' => $datos_hc->php_extensions_status->soap->status,
+            'soap_version' => $datos_hc->php_extensions_status->soap->version,
+            'mcrypt_status' => $datos_hc->php_extensions_status->mcrypt->status,
+            'mcrypt_version' => $datos_hc->php_extensions_status->mcrypt->version,
+            'dom_status' => $datos_hc->php_extensions_status->dom->status,
+            'dom_version' => $datos_hc->php_extensions_status->dom->version,
+            'php_info' => $datos_hc->php_info->string->content,
             'lockfile' => isset($resume['lock_file']['status']) ? $resume['lock_file']['status'] : NULL,
             'logs' => isset($resume['last_log']['log_content']) ? $resume['last_log']['log_content'] : NULL,
             'log_file' => isset($resume['last_log']['log_file']) ? $resume['last_log']['log_file'] : NULL,
@@ -85,4 +83,3 @@ class TbkButton extends \Magento\Config\Block\System\Config\Form\Field {
         return $this->_toHtml();
     }
 }
-?>

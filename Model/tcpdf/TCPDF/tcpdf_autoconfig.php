@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF;
+namespace Transbank\Webpay\Model\tcpdf\TCPDF;
 if ((!isset($_SERVER['DOCUMENT_ROOT'])) OR (empty($_SERVER['DOCUMENT_ROOT']))) {
 	if(isset($_SERVER['SCRIPT_FILENAME'])) {
 		$_SERVER['DOCUMENT_ROOT'] = str_replace( '\\', '/', substr($_SERVER['SCRIPT_FILENAME'], 0, 0-strlen($_SERVER['PHP_SELF'])));

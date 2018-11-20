@@ -34,6 +34,8 @@ define(
             },
             placeOrder: function() {
 
+                $('.loading-mask').show();
+
                 var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
 
                 if (quote.guestEmail) {
@@ -49,6 +51,8 @@ define(
                                     '</form>');
                         $('body').append(form);
                         form.submit();
+
+                        $('.loading-mask').hide();
 
                     } else {
                         alert('Error al crear transacción');

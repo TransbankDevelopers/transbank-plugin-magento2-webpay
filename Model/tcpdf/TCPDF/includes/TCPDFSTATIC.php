@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes;
+namespace Transbank\Webpay\Model\tcpdf\TCPDF\includes;
 //============================================================+
 // File name   : tcpdf_static.php
 // Version     : 1.1.3

@@ -1,8 +1,8 @@
 <?php
 namespace Transbank\Webpay\Controller\Transaction;
 
-use Transbank\Webpay\Model\Libwebpay\TransbankSdkWebpay;
-use Transbank\Webpay\Model\Libwebpay\LogHandler;
+use Transbank\Webpay\Model\TransbankSdkWebpay;
+use Transbank\Webpay\Model\LogHandler;
 
 use \Magento\Sales\Model\Order;
 
@@ -41,89 +41,93 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
      */
     public function execute() {
 
-        $tokenWs = isset($_POST['token_ws']) ? $_POST['token_ws'] : null;
+        $config = $this->configProvider->getPluginConfig();
+        $orderStatusCanceled = $config['error_pay'];
 
-        if($tokenWs != $this->checkoutSession->getTokenWs()) {
-            $this->checkoutSession->restoreQuote();
-            $this->messageManager->addError(__('Trasacción inválida'));
-            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
-        }
-
-        $paymentOk = $this->checkoutSession->getPaymentOk();
-
-        $order = $this->getOrder();
-
-        if ($paymentOk  == 'WAITING') {
+        try {
 
             $order = $this->getOrder();
 
-            $quoteId = $this->checkoutSession->getLastQuoteId();
-            $orderId = $this->checkoutSession->getLastOrderId();
-            $grandTotal = $this->checkoutSession->getGrandTotal();
+            $tokenWs = isset($_POST['token_ws']) ? $_POST['token_ws'] : null;
 
-            $this->log->logInfo('2- quoteId: ' . $quoteId . ', orderId: ' . $orderId . ', grandTotal: ' . $grandTotal);
+            if($tokenWs != $this->checkoutSession->getTokenWs()) {
+                throw new \Exception('Token inválido');
+            }
 
-            $result = array();
+            $paymentOk = $this->checkoutSession->getPaymentOk();
 
-            $config = $this->configProvider->getPluginConfig();
+            if ($paymentOk  == 'WAITING') {
 
-            $transbankSdkWebpay = new TransbankSdkWebpay($config);
-            $result = $transbankSdkWebpay->commitTransaction($tokenWs);
+                $transbankSdkWebpay = new TransbankSdkWebpay($config);
+                $result = $transbankSdkWebpay->commitTransaction($tokenWs);
 
-            $this->checkoutSession->setResultWebpay($result);
+                $this->checkoutSession->setResultWebpay($result);
 
-            if (isset($result->buyOrder) && isset($result->detailOutput) && $result->detailOutput->responseCode == 0) {
+                if (isset($result->buyOrder) && isset($result->detailOutput) && $result->detailOutput->responseCode == 0) {
 
-                $this->checkoutSession->setPaymentOk('SUCCESS');
+                    $this->checkoutSession->setPaymentOk('SUCCESS');
 
-                $authorizationCode = $result->detailOutput->authorizationCode;
-                $payment = $order->getPayment();
-                $payment->setLastTransId($authorizationCode);
-                $payment->setTransactionId($authorizationCode);
-                $payment->setAdditionalInformation([\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array)$result]);
+                    $authorizationCode = $result->detailOutput->authorizationCode;
+                    $payment = $order->getPayment();
+                    $payment->setLastTransId($authorizationCode);
+                    $payment->setTransactionId($authorizationCode);
+                    $payment->setAdditionalInformation([\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array)$result]);
 
-                $orderStatus = $config['sucefully_pay'];
-                $order->setState($orderStatus)->setStatus($orderStatus);
-                $order->addStatusToHistory($order->getStatus(), json_encode($result));
-                $order->save();
+                    $orderStatus = $config['sucefully_pay'];
+                    $order->setState($orderStatus)->setStatus($orderStatus);
+                    $order->addStatusToHistory($order->getStatus(), json_encode($result));
+                    $order->save();
 
-                $this->checkoutSession->getQuote()->setIsActive(false)->save();
+                    $this->checkoutSession->getQuote()->setIsActive(false)->save();
 
-                return $this->toRedirect($result->urlRedirection, array('token_ws' => $tokenWs));
+                    return $this->toRedirect($result->urlRedirection, array('token_ws' => $tokenWs));
+
+                } else {
+
+                    $this->checkoutSession->setPaymentOk('FAIL');
+
+                    $order->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
+                    $order->addStatusToHistory($order->getStatus(), json_encode($result));
+                    $order->save();
+
+                    $this->checkoutSession->restoreQuote();
+
+                    $message = $this->getRejectMessage($result);
+                    $this->messageManager->addError(__($message));
+
+                    return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+                }
 
             } else {
 
-                $this->checkoutSession->setPaymentOk('FAIL');
+                $result = $this->checkoutSession->getResultWebpay();
 
-                $orderStatus = $config['error_pay'];
-                $order->setState($orderStatus)->setStatus($orderStatus);
-                $order->addStatusToHistory($order->getStatus(), json_encode($result));
+                if ($paymentOk == 'SUCCESS') {
+
+                    $message = $this->getSuccessMessage($result);
+                    $this->messageManager->addSuccess(__($message));
+                    return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
+
+                } else if ($paymentOk == 'FAIL') {
+
+                    $this->checkoutSession->restoreQuote();
+                    $message = $this->getRejectMessage($result);
+                    $this->messageManager->addError(__($message));
+                    return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+                }
+            }
+
+        } catch(\Exception $e) {
+            $message = 'Error al confirmar transacción: ' . $e->getMessage();
+            $this->log->logError($message);
+            $this->checkoutSession->restoreQuote();
+            $this->messageManager->addError(__($message));
+            if ($order != null) {
+                $order->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
+                $order->addStatusToHistory($order->getStatus(), $message);
                 $order->save();
-
-                $this->checkoutSession->restoreQuote();
-
-                $message = $this->getRejectMessage($result);
-                $this->messageManager->addError(__($message));
-
-                return $this->resultRedirectFactory->create()->setPath('checkout/cart');
             }
-
-        } else {
-
-            $result = $this->checkoutSession->getResultWebpay();
-
-            if ($paymentOk  == 'SUCCESS') {
-
-                $message = $this->getSuccessMessage($result);
-                $this->messageManager->addSuccess(__($message));
-                return $this->resultRedirectFactory->create()->setPath('checkout/onepage/success');
-
-            } else if ($paymentOk  == 'FAIL') {
-
-                $message = $this->getRejectMessage($result);
-                $this->messageManager->addError(__($message));
-                return $this->resultRedirectFactory->create()->setPath('checkout/cart');
-            }
+            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
         }
     }
 
@@ -164,18 +168,33 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
     }
 
     private function getRejectMessage($result) {
-        $message = "<h2>Transacci&oacute;n Rechazada</h2>
-        <p>
-            <br>
-            <b>Respuesta de la Transacci&oacute;n: </b>{$result->detailOutput->responseCode}<br>
-            <b>Monto:</b> $ {$result->detailOutput->amount}<br>
-            <b>Order de Compra: </b> {$result->detailOutput->buyOrder}<br>
-            <b>Fecha de la Transacci&oacute;n: </b>".date('d-m-Y', strtotime($result->transactionDate))."<br>
-            <b>Hora de la Transacci&oacute;n: </b>".date('H:i:s', strtotime($result->transactionDate))."<br>
-            <b>Tarjeta: </b>************{$result->cardDetail->cardNumber}<br>
-            <b>Mensaje de Rechazo: </b>{$result->detailOutput->responseDescription}
-        </p>";
-        return $message;
+        if  (isset($result->detailOutput)) {
+            $message = "<h2>Transacci&oacute;n Rechazada</h2>
+            <p>
+                <br>
+                <b>Respuesta de la Transacci&oacute;n: </b>{$result->detailOutput->responseCode}<br>
+                <b>Monto:</b> $ {$result->detailOutput->amount}<br>
+                <b>Order de Compra: </b> {$result->detailOutput->buyOrder}<br>
+                <b>Fecha de la Transacci&oacute;n: </b>".date('d-m-Y', strtotime($result->transactionDate))."<br>
+                <b>Hora de la Transacci&oacute;n: </b>".date('H:i:s', strtotime($result->transactionDate))."<br>
+                <b>Tarjeta: </b>************{$result->cardDetail->cardNumber}<br>
+                <b>Mensaje de Rechazo: </b>{$result->detailOutput->responseDescription}
+            </p>";
+            return $message;
+        } else if (isset($result['error'])) {
+            $error = $result['error'];
+            $detail = isset($result['detail']) ? $result['detail'] : 'Sin detalles';
+            $message = "<h2>Transacci&oacute;n Fallida</h2>
+            <p>
+                <br>
+                <b>Respuesta de la Transacci&oacute;n: </b>{$error}<br>
+                <b>Mensaje: </b>{$detail}
+            </p>";
+            return $message;
+        } else {
+            $message = "<h2>Transacci&oacute;n Fallida</h2>";
+            return $message;
+        }
     }
 
     private function getOrder() {

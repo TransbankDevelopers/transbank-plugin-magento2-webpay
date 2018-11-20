@@ -1,18 +1,18 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay;
+namespace Transbank\Webpay\Model;
 
-use Transbank\Webpay\Model\Libwebpay\ReportPdf;
-use Transbank\Webpay\Model\Libwebpay\LogHandler;
+use Transbank\Webpay\Model\ReportPdf;
+use Transbank\Webpay\Model\LogHandler;
 
-class ReportPdfLog{
+class ReportPdfLog {
 
     function __construct($document){
         $this->document = $document;
     }
 
     function getReport($myJSON){
-        $logHandler = new LogHandler();
-        $data = $logHandler->getLastLog();
+        $log = new LogHandler();
+        $data = $log->getLastLog();
         $obj = json_decode($myJSON,true);
         if (isset($data['log_content']) && $this->document == 'report'){
             $html = str_replace("\r\n","<br>",$data['log_content']);

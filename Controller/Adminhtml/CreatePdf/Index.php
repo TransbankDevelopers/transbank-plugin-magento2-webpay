@@ -1,8 +1,8 @@
 <?php
 namespace Transbank\Webpay\Controller\Adminhtml\CreatePdf;
 
-use Transbank\Webpay\Model\Libwebpay\HealthCheck;
-use Transbank\Webpay\Model\Libwebpay\ReportPdfLog;
+use Transbank\Webpay\Model\HealthCheck;
+use Transbank\Webpay\Model\ReportPdfLog;
 
 class Index extends \Magento\Backend\App\Action {
 
@@ -10,7 +10,7 @@ class Index extends \Magento\Backend\App\Action {
         \Magento\Backend\App\Action\Context $context,
         \Transbank\Webpay\Model\Config\ConfigProvider $configProvider) {
         parent::__construct($context);
-        $this->_configProvider = $configProvider;
+        $this->configProvider = $configProvider;
     }
 
     /**
@@ -18,7 +18,7 @@ class Index extends \Magento\Backend\App\Action {
      */
     public function execute() {
 
-        $config = $this->_configProvider->getConfig();
+        $config = $this->configProvider->getPluginConfig();
 
         $healthcheck = new HealthCheck($config);
         $json = $healthcheck->printFullResume();

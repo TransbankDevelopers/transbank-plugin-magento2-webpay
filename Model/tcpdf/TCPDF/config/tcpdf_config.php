@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\config;
+namespace Transbank\Webpay\Model\tcpdf\TCPDF\config;
 //============================================================+
 // File name   : tcpdf_config.php
 // Begin       : 2004-06-11

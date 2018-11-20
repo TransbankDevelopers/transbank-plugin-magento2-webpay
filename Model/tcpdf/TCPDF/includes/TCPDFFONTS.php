@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes;
+namespace Transbank\Webpay\Model\tcpdf\TCPDF\includes;
 //============================================================+
 // File name   : TCPDFFONTS.php
 // Version     : 1.1.0
@@ -1778,9 +1778,9 @@ class TCPDFFONTS {
 	 */
 	public static function UTF8ArrayToUniArray($ta, $isunicode=true) {
 		if ($isunicode) {
-			return array_map(array('Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes\TCPDFFONTS', 'unichrUnicode'), $ta);
+			return array_map(array('Transbank\Webpay\Model\tcpdf\TCPDF\includes\TCPDFFONTS', 'unichrUnicode'), $ta);
 		}
-		return array_map(array('Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes\TCPDFFONTS', 'unichrASCII'), $ta);
+		return array_map(array('Transbank\Webpay\Model\tcpdf\TCPDF\includes\TCPDFFONTS', 'unichrASCII'), $ta);
 	}
 
 	/**
@@ -1999,7 +1999,7 @@ class TCPDFFONTS {
 		if ($isunicode) {
 			// requires PCRE unicode support turned on
 			$chars = TCPDFSTATIC::pregSplit('//','u', $str, -1, PREG_SPLIT_NO_EMPTY);
-			$carr = array_map(array('Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes\TCPDFFONTS', 'uniord'), $chars);
+			$carr = array_map(array('Transbank\Webpay\Model\tcpdf\TCPDF\includes\TCPDFFONTS', 'uniord'), $chars);
 		} else {
 			$chars = str_split($str);
 			$carr = array_map('ord', $chars);

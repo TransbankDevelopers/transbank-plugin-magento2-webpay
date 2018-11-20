@@ -1,8 +1,8 @@
 <?php
 namespace Transbank\Webpay\Controller\Transaction;
 
-use Transbank\Webpay\Model\Libwebpay\TransbankSdkWebpay;
-use Transbank\Webpay\Model\Libwebpay\LogHandler;
+use Transbank\Webpay\Model\TransbankSdkWebpay;
+use Transbank\Webpay\Model\LogHandler;
 
 use \Magento\Sales\Model\Order;
 use \Transbank\Webpay\Model\Webpay;
@@ -34,16 +34,20 @@ class CreateWebpay extends \Magento\Framework\App\Action\Action {
     public function execute() {
 
         $response = null;
-        $guestEmail = isset($_GET['guestEmail']) ? $_GET['guestEmail'] : null;
+        $order = null;
+        $config = $this->configProvider->getPluginConfig();
+        $orderStatusCanceled = $config['error_pay'];
 
         try {
 
-            $orderStatusPendingPayment = Order::STATE_PENDING_PAYMENT;
+            $guestEmail = isset($_GET['guestEmail']) ? $_GET['guestEmail'] : null;
+
+            $config = $this->configProvider->getPluginConfig();
+            $orderStatusPendingPayment = $config['order_status'];
 
             $tmpOrder = $this->getOrder();
 
             if ($tmpOrder != null && $tmpOrder->getStatus() == $orderStatusPendingPayment) {
-                $orderStatusCanceled = Order::STATE_CANCELED;
                 $tmpOrder->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
                 $tmpOrder->save();
                 $this->checkoutSession->restoreQuote();
@@ -52,7 +56,6 @@ class CreateWebpay extends \Magento\Framework\App\Action\Action {
             $quote = $this->cart->getQuote();
 
             if ($guestEmail != null) {
-                $this->log->info('set guest email: ' . $guestEmail);
                 $quote->getBillingAddress()->setEmail($guestEmail);
                 $quote->setData('customer_email', $quote->getBillingAddress()->getEmail());
                 $quote->setData('customer_firstname', $quote->getBillingAddress()->getFirstName());
@@ -78,20 +81,16 @@ class CreateWebpay extends \Magento\Framework\App\Action\Action {
 
             $baseUrl = $this->storeManager->getStore()->getBaseUrl();
 
-            $config = $this->configProvider->getPluginConfig();
             $returnUrl = $baseUrl . $config['URL_RETURN'];
             $finalUrl = $baseUrl . $config['URL_FINAL'];
             $grandTotal = $this->checkoutSession->getGrandTotal();
             $quoteId = $this->checkoutSession->getLastQuoteId();
             $orderId = $this->checkoutSession->getLastOrderId();
 
-            $dataLog = array('grandTotal' => $grandTotal, 'quoteId' => $quoteId, 'orderId' => $orderId);
-
-            $this->log->logInfo('Creando transaccion: ' . json_encode($dataLog));
-
             $transbankSdkWebpay = new TransbankSdkWebpay($config);
             $response = $transbankSdkWebpay->initTransaction($grandTotal, $quoteId, $orderId, $returnUrl, $finalUrl);
 
+            $dataLog = array('grandTotal' => $grandTotal, 'quoteId' => $quoteId, 'orderId' => $orderId);
             $message = "<h3>Esperando pago con Webpay</h3><br>" . json_encode($dataLog);
 
             if (isset($response['token_ws'])) {
@@ -108,10 +107,15 @@ class CreateWebpay extends \Magento\Framework\App\Action\Action {
             $this->checkoutSession->getQuote()->setIsActive(true)->save();
             $this->cart->getQuote()->setIsActive(true)->save();
 
-        } catch (\Exception $ex) {
-            $msg = 'Creacion de transacción fallida: ' . $ex->getMessage();
-            $this->log->logError($msg);
-            $response = array('error' => $msg);
+        } catch (\Exception $e) {
+            $message = 'Error al crear transacción: ' . $e->getMessage();
+            $this->log->logError($message);
+            $response = array('error' => $message);
+            if ($order != null) {
+                $order->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
+                $order->addStatusToHistory($order->getStatus(), $message);
+                $order->save();
+            }
         }
 
         $result = $this->resultJsonFactory->create();

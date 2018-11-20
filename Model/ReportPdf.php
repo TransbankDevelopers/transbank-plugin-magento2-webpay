@@ -1,7 +1,7 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay;
+namespace Transbank\Webpay\Model;
 
-use Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\TCPDF;
+use Transbank\Webpay\Model\tcpdf\TCPDF\TCPDF;
 
 class ReportPdf {
 

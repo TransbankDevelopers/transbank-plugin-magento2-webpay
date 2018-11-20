@@ -13,7 +13,8 @@ class OrderStatus implements \Magento\Framework\Option\ArrayInterface {
                 ['value' => 'pending_payment', 'label' => __('pending_payment')],
                 ['value' => 'payment_review', 'label' => __('payment_review')],
                 ['value' => 'complete', 'label' => __('complete')],
-                ['value' => 'canceled', 'label' => __('canceled')]];
+                ['value' => 'canceled', 'label' => __('canceled')],
+                ['value' => 'closed', 'label' => __('closed')]];
     }
 
     /**
@@ -26,7 +27,8 @@ class OrderStatus implements \Magento\Framework\Option\ArrayInterface {
                 'pending_payment' => __('pending_payment'),
                 'payment_review' => __('payment_review'),
                 'complete' => __('complete'),
-                'canceled' => __('canceled')];
+                'canceled' => __('canceled'),
+                'closed' => __('closed')];
     }
 
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Transbank\Webpay\Model\Libwebpay\tcpdf\TCPDF\includes;
+namespace Transbank\Webpay\Model\tcpdf\TCPDF\includes;
 //============================================================+
 // File name   : tcpdf_filters.php
 // Version     : 1.0.001
