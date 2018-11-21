@@ -13,9 +13,11 @@ Este plugin oficial ha sido creado para que puedas integrar Webpay fácilmente e
 
 **Nota:** En este punto composer podría pedirte si lo requiere tus creedenciales de magento2.
 
-En tu directorio de Magento2, ejecutar el comando:
+**Versiones disponibles** [Aquí](https://packagist.org/packages/transbank/webpay-magento2)
 
-    composer require transbank/webpay-magento2
+En tu directorio de Magento2, ejecutar el comando, donde `VERSION` es la última versión:
+
+    composer require transbank/webpay-magento2:VERSION
 
   ![Paso 7](img/paso7.png)
 
