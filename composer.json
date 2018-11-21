@@ -2,12 +2,6 @@
     "name": "transbank/webpay-magento2",
     "description": "Pago via tarjetas debito y credito a travez de transbank",
     "require": {
-        "ext-simplexml": "*",
-        "ext-openssl": "=>1.0.1",
-        "ext-soap": "*",
-        "ext-dom": "=>2.7.8",
-        "ext-mcrypt": "*",
-        "ext-sockets": "*",
         "magento/module-sales": ">100.0",
         "magento/module-checkout": ">100.0",
         "magento/module-payment": ">100.0",

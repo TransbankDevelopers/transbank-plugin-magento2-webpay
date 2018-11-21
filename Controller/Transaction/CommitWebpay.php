@@ -152,7 +152,7 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
             $tipoCuotas = "Sin cuotas";
         }
 
-		$message = "<h2>Detalles del Pago</h2>
+		$message = "<h2>Detalles del pago con Webpay</h2>
         <p>
             <br>
             <b>Respuesta de la Transacci&oacute;n: </b>{$result->detailOutput->responseCode}<br>
@@ -169,7 +169,7 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
 
     private function getRejectMessage($result) {
         if  (isset($result->detailOutput)) {
-            $message = "<h2>Transacci&oacute;n Rechazada</h2>
+            $message = "<h2>Transacci&oacute;n rechazada con Webpay</h2>
             <p>
                 <br>
                 <b>Respuesta de la Transacci&oacute;n: </b>{$result->detailOutput->responseCode}<br>
@@ -184,7 +184,7 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
         } else if (isset($result['error'])) {
             $error = $result['error'];
             $detail = isset($result['detail']) ? $result['detail'] : 'Sin detalles';
-            $message = "<h2>Transacci&oacute;n Fallida</h2>
+            $message = "<h2>Transacci&oacute;n fallida con Webpay</h2>
             <p>
                 <br>
                 <b>Respuesta de la Transacci&oacute;n: </b>{$error}<br>
