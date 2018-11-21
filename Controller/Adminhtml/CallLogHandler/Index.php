@@ -1,49 +1,24 @@
 <?php
-  namespace Transbank\Webpay\Controller\Adminhtml\CallLogHandler;
-  use Magento\Backend\App\Action;
-  use Magento\Backend\App\Action\Context;
-  use Transbank\Webpay\Model\Libwebpay\LogHandler;
-  class Index extends Action
-  {
-    /**
-    * @var \Magento\Framework\View\Result\PageFactory
-    */
-    protected $resultPageFactory;
+namespace Transbank\Webpay\Controller\Adminhtml\CallLogHandler;
 
-    /**
-     * Constructor
-     *
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     */
-    public function __construct(
-        Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory
-    ) {
-         parent::__construct($context);
-      //   $this->resultPageFactory = $resultPageFactory;
+use Transbank\Webpay\Model\LogHandler;
+
+class Index extends \Magento\Backend\App\Action {
+
+    public function __construct(\Magento\Backend\App\Action\Context $context) {
+        parent::__construct($context);
     }
 
     /**
-     * Load the page defined in view/adminhtml/layout/exampleadminnewpage_helloworld_index.xml
-     *
-     * @return \Magento\Framework\View\Result\Page
+     * @Override
      */
-    public function execute()
-    {
-      if (!isset($_COOKIE["action_check"])) {
-      	die;
-      }
-      $log = new loghandler('magento');
-
-      if ($_COOKIE["action_check"] == 'true') {
-      	$log->setLockStatus(true);
-      	$log->setnewconfig($_COOKIE['days'] , $_COOKIE['size']);
-      }
-      else
-      	$log->setLockStatus(false);
-
-      echo "<script>window.close();</script>";
-   }
-  }
-?>
+    public function execute() {
+        $log = new LogHandler();
+        if ($_POST["action_check"] == 'true') {
+            $log->setLockStatus(true);
+            $log->setparamsconf($_POST['days'], $_POST['size']);
+        } else {
+            $log->setLockStatus(false);
+        }
+    }
+}

@@ -12,7 +12,6 @@ El plugin depende de las siguientes librerías:
 
 * transbank/transbank-sdk
 * tecnickcom/tcpdf
-* apache/log4php
 
 ## Nota  
 - La versión del sdk de php se encuentra en el archivo `composer.json`

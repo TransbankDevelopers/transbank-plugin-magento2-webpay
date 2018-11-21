@@ -1,5 +1,4 @@
-
-    define(
+define(
     [
         'jquery',
         'Magento_Checkout/js/view/payment/default',
@@ -9,60 +8,57 @@
         'Magento_Checkout/js/checkout-data',
         'Magento_Checkout/js/model/payment/additional-validators',
         'mage/url',
-        'Magento_Payment/js/view/payment/cc-form',
+        'Magento_Checkout/js/model/quote'
     ],
     function ($,
-        Component,
-        placeOrderAction,
-        selectPaymentMethodAction,
-        customer,
-        checkoutData,
-        additionalValidators,
-        url) {
+              Component,
+              placeOrderAction,
+              selectPaymentMethodAction,
+              customer,
+              checkoutData,
+              additionalValidators,
+              url,
+              quote) {
+        'use strict';
 
-            'use strict';
+        return Component.extend({
+            defaults: {
+                template: 'Transbank_Webpay/payment/webpay'
+            },
 
-            return Component.extend({
-                defaults: {
-                	  template: 'Transbank_Webpay/payment/webpay'
-                },
+            getCode: function() {
+              return 'transbank_webpay';
+            },
+            getTitle: function() {
+                return "Transbank Webpay";
+            },
+            placeOrder: function() {
 
-                placeOrder: function () {
+                $('.loading-mask').show();
 
-					var self = this,
-                    placeOrder;
-                    this.isPlaceOrderActionAllowed(false);
-                    placeOrder = placeOrderAction(this.getData(), false, this.messageContainer);
+                var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
 
-					
-                    $.when(self).fail(function () {
-                        self.isPlaceOrderActionAllowed(true);
-                    }).done(this.afterPlaceOrder.bind(this));
+                if (quote.guestEmail) {
+                    url+='?guestEmail=' + encodeURIComponent(quote.guestEmail);
+                }
 
-                },
+                $.getJSON(url, function(result) {
 
-                afterPlaceOrder: function(){
+                    if (result != undefined && result.token_ws != undefined){
 
-					var result = window.checkoutConfig.initTransaction;
+                        var form = $('<form action="' + result.url + '" method="post">' +
+                                    '<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
+                                    '</form>');
+                        $('body').append(form);
+                        form.submit();
 
-                    result = JSON.parse(result);
-                    
-                    if (typeof result.token_ws !== 'undefined'){
-
-											var form = $('<form action="' + result.url + '" method="post">' +
-  										'<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
-  										'</form>');
-											$('body').append(form);
-											form.submit();
+                        $('.loading-mask').hide();
 
                     } else {
-
-                    	window.location.href = result.callUrl+'transbank/Implement/CancelOrder';
-
+                        alert('Error al crear transacción');
                     }
-
-                },
-
-            });
-        }
-    );
+                });
+            }
+        })
+    }
+);
