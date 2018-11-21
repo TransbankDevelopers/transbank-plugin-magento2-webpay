@@ -61,24 +61,28 @@ Para acceder a la configuración, debes seguir los siguientes pasos:
 
 6. ¡Ya está! Estás en la pantalla de configuración del plugin, debes ingresar la siguiente información:
   * **Enable**: Al activarlo, Webpay estará disponible como medio de pago. Ten la precaución de que se encuentre marcada esta opción cuando quieras que los usuarios paguen con Webpay.
-  * **Endpoint**: Ambiente hacia donde se realiza la transacción. 
-  * **APIKey**: Es lo que te identifica como comercio.
-  * **Shared Secret**: Llave secreta que te autoriza y valida a hacer transacciones.
-  
-  Las opciones disponibles para _Endpoint_ son: "Integración" para realizar pruebas y certificar la instalación con Transbank, y "Producción" para hacer transacciones reales una vez que Transbank ha aprobado el comercio. Dependiendo de cual Endpoint se ha seleccionado el plugin usará uno de los dos set de APIKey y Shared Secret según corresponda. 
+  * **Ambiente a Utilizar**: Ambiente hacia donde se realiza la transacción. 
+  * **Código de comercio**: Es lo que te identifica como comercio.
+  * **Llave Privada**: Llave secreta que te autoriza y valida a hacer transacciones.
+  * **Certificado Publico**: Llave publica que te autoriza y valida a hacer transacciones.
+  * **Certificado Webpay**: Llave secreta de webpay que te autoriza y valida a hacer transacciones.
+
+  Las opciones disponibles para _Ambiente a Utilizar_ son: "Integración" para realizar pruebas y certificar la instalación con Transbank, y "Producción" para hacer transacciones reales una vez que Transbank ha aprobado el comercio.
   
 ### Credenciales de Prueba
 
 Para el ambiente de Integración, puedes utilizar las siguientes credenciales para realizar pruebas:
 
-* APIKey: `dKVhq1WGt_XapIYirTXNyUKoWTDFfxaEV63-O5jcsdw`
-* Shared Secret: `?XW#WOLG##FBAGEAYSNQ5APD#JF@$AYZ`
+* Código de comercio: `597020000540`
+* Llave Privada: Se puede encontrar [aquí - private_key](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/blob/master/etc/config.xml)
+* Certificado Publico: Se puede encontrar [aquí - public_cert](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/blob/master/etc/config.xml)
+* Certificado Webpay: Se puede encontrar [aquí - webpay_cert](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/blob/master/etc/config.xml)
 
-7. Guardar los cambios presionando el botón [Save Config]
+1. Guardar los cambios presionando el botón [Save Config]
 
   ![Paso 15](img/paso15.png)
 
-8. Además, puedes generar un documento de diagnóstico en caso que Transbank te lo pida. Para ello, haz click en "Generar PDF de Diagnóstico", y automáticamente se descargará dicho documento.
+2. Además, puedes generar un documento de diagnóstico en caso que Transbank te lo pida. Para ello, haz click en "Parametros Principales" botón "Información" ahí podrás descargar un pdf.
 
   ![Paso 17](img/paso17.png)
 
@@ -132,26 +136,41 @@ En ambiente de integración es posible realizar una prueba de transacción utili
 
   ![Paso 8](img/paso23.png)
 
-* Una vez presionado el botón para iniciar la compra, se mostrará la ventana de pago Webpay, tal como se ve en la imagen. Toma nota del número que aparece como "Código de compra", ya que lo necesitarás para emular el pago en el siguiente paso:
-  
-  ![Paso 9](img/paso24.png)
-  
-* En otra ventana del navegador, ingresa al emulador de pagos desde [https://webpay.ionix.cl/mobile-payment-emulator/](https://webpay.ionix.cl/mobile-payment-emulator/), utiliza test@webpay.cl como correo electrónico, y el código de compra obtenido desde la pantalla anterior. Una vez ingresado los datos solicitados, presiona el botón "Iniciar Pago":
-* 
-  ![Paso 10](img/paso25.png)
-  
-* Si todo va bien, el emulador mostrará opciones para simular situaciones distintas. Para simular un pago exitoso, presiona el botón `PRE_AUTHORIZED`. En caso de querer simular un pago fallido, presiona le botón `REJECTED`. Simularemos un pago exitóso presionando el botón `PRE_AUTHORIZED`.
+* Una vez presionado el botón para iniciar la compra, se mostrará la ventana de pago Webpay y deberás seguir el proceso de pago.
 
-  ![Paso 11](img/paso26.png)
-  
-* Vuelve a la ventana del navegador donde se encuentra Magento2 y podrás comprobar que el pago ha sido exitoso.
+Para pruebas puedes usar los siguientes datos:  
 
- ![Paso 12](img/paso27.png)
+* Número de tarjeta: `4051885600446623`
+* Rut: `11.111.111-1`
+* Cvv: `123`
+  
+![Paso 9](img/paso24.png)
+
+![Paso 9](img/paso25.png)
+
+Para pruebas puedes usar los siguientes datos:  
+
+* Rut: `11.111.111-1`
+* Clave: `123`
+
+![Paso 10](img/paso26.png)
+
+Puedes aceptar o rechazar la transacción
+
+![Paso 11](img/paso27.png)
+
+![Paso 12](img/paso28.png)
+
+![Paso 13](img/paso29.png)
+  
+* Serás redirigido a Magento2 y podrás comprobar que el pago ha sido exitoso.
+
+ ![Paso 14](img/paso30.png)
 
 * Además si accedes al sitio de administración seccion (Sales / Ordes) se podrá ver la orden creada y el detalle de los datos entregados por Webpay.
 
- ![Paso 13](img/paso28.png)
+ ![Paso 15](img/paso31.png)
 
- ![Paso 14](img/paso29.png)
+ ![Paso 16](img/paso32.png)
 
- ![Paso 15](img/paso30.png)
+ ![Paso 17](img/paso33.png)
