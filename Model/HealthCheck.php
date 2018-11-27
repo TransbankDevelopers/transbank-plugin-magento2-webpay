@@ -3,18 +3,19 @@ namespace Transbank\Webpay\Model;
 
 class HealthCheck {
 
-    public $publicCert;
-    public $privateKey;
-    public $webpayCert;
-    public $commerceCode;
-    public $environment;
-    public $extensions;
-    public $versioninfo;
-    public $resume;
-    public $fullResume;
-    public $certficados;
-    public $ecommerce;
-    public $testurl;
+    var $phpinfo;
+    var $publicCert;
+    var $privateKey;
+    var $webpayCert;
+    var $commerceCode;
+    var $environment;
+    var $extensions;
+    var $versioninfo;
+    var $resume;
+    var $fullResume;
+    var $certficados;
+    var $ecommerce;
+    var $config;
 
     public function __construct($config) {
         $this->config = $config;
@@ -24,10 +25,6 @@ class HealthCheck {
         $this->privateKey = $config['PRIVATE_KEY'];
         $this->webpayCert = $config['WEBPAY_CERT'];
         $this->ecommerce = $config['ECOMMERCE'];
-        $this->testurl = $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
-
-        $config['URL_RETURN'] = $this->testurl."?action=return";
-        $config['URL_FINAL'] = $this->testurl."?action=final";
 
         $this->resume = null;
         $this->fullResume = null;
@@ -39,15 +36,12 @@ class HealthCheck {
             'openssl',
             'SimpleXML',
             'soap',
-            'mcrypt',
-            'dom',
+            'dom'
         );
     }
 
-  // validaciones
-  // validacion certificado publico versus la llave
+    // validacion certificado publico versus la llave
     private function getValidateCertificates() {
-        $this->certinfo = array('');/**/
         if ($var = openssl_x509_parse($this->publicCert)) {
             $today = date('Y-m-d H:i:s');
             $from = date('Y-m-d H:i:s', $var['validFrom_time_t']);
@@ -55,14 +49,22 @@ class HealthCheck {
             if ($today >= $from and $today <= $to) {
                 $val = "OK";
             } else {
-                $val = "Error!: Certificado Invalido por Fecha";
+                $val = "Error!: Certificado Inválido por Fecha";
             }
             $this->certinfo = array(
                 'subject_commerce_code' => $var['subject']['CN'],
                 'version' => $var['version'],
-                'is_valid' =>$val,
+                'is_valid' => $val,
                 'valid_from' => date('Y-m-d H:i:s', $var['validFrom_time_t']),
                 'valid_to' => date('Y-m-d H:i:s', $var['validTo_time_t']),
+            );
+        } else {
+            $this->certinfo = array(
+                'subject_commerce_code' => $this->commerceCode,
+                'version' => 'Error',
+                'is_valid' => 'Error',
+                'valid_from' => 'Error',
+                'valid_to' => 'Error',
             );
         }
         if (openssl_x509_check_private_key($this->publicCert, $this->privateKey)) {
@@ -74,7 +76,8 @@ class HealthCheck {
             }
         } else {
             $this->certificates = array(
-                'cert_vs_private_key' => 'Error!: Certificados incosistentes'
+                'cert_vs_private_key' => 'Error!: Certificados inconsistentes',
+                'commerce_code_validate' => 'Error'
             );
         }
         return array('consistency' => $this->certificates, 'cert_info' => $this->certinfo);
@@ -156,14 +159,14 @@ class HealthCheck {
     // creacion de retornos
     // arma array que entrega informacion del ecommerce: nombre, version instalada, ultima version disponible
     private function getPluginInfo($ecommerce) {
-      $data = $this->getEcommerceInfo($ecommerce);
-      $result = array(
-        'ecommerce' => $ecommerce,
-        'ecommerce_version' => $data['current_ecommerce_version'],
-        'current_plugin_version' => $data['current_plugin_version'],
-        'last_plugin_version' => $this->getPluginLastVersion($ecommerce, $data['current_ecommerce_version']) // ultimo declarado
-      );
-      return $result;
+        $data = $this->getEcommerceInfo($ecommerce);
+        $result = array(
+            'ecommerce' => $ecommerce,
+            'ecommerce_version' => $data['current_ecommerce_version'],
+            'current_plugin_version' => $data['current_plugin_version'],
+            'last_plugin_version' => $this->getPluginLastVersion($ecommerce, $data['current_ecommerce_version']) // ultimo declarado
+        );
+        return $result;
     }
 
     // arma array con informacion del ultimo plugin compatible con el ecommerce
@@ -195,6 +198,7 @@ class HealthCheck {
         );
         return $this->resume;
     }
+
     // crea array con la informacion de comercio para posteriormente exportarla via json
     private function getCommerceInfo() {
         $result = array(
@@ -226,21 +230,21 @@ class HealthCheck {
         $sessionId = uniqid();
         $returnUrl = "https://webpay3gint.transbank.cl/filtroUnificado/initTransaction";
         $finalUrl = "https://webpay3gint.transbank.cl/filtroUnificado/initTransaction";
-        $this->result = $transbankSdkWebpay->initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl);
-        if ($this->result) {
-            if (!empty($this->result["error"]) && isset($this->result["error"])) {
+        $result = $transbankSdkWebpay->initTransaction($amount, $sessionId, $buyOrder, $returnUrl, $finalUrl);
+        if ($result) {
+            if (!empty($result["error"]) && isset($result["error"])) {
                 $status = 'Error';
             } else {
                 $status = 'OK';
             }
         } else {
-            if (array_key_exists('error', $this->result)) {
+            if (array_key_exists('error', $result)) {
                 $status =  "Error";
             }
         }
         $response = array(
             'status' => array('string' => $status),
-            'response' => preg_replace('/<!--(.*)-->/Uis', '', $this->result)
+            'response' => preg_replace('/<!--(.*)-->/Uis', '', $result)
         );
         return $response;
     }
@@ -277,7 +281,7 @@ class HealthCheck {
     }
 
     // imprime en formato json la validacion de extensiones / modulos de php
-    public function printExtensionStatus(){
+    public function printExtensionStatus() {
         return json_encode($this->getExtensionsValidate());
     }
 
