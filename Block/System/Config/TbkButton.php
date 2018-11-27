@@ -55,8 +55,6 @@ class TbkButton extends \Magento\Config\Block\System\Config\Form\Field {
             'SimpleXML_version' => $datos_hc->php_extensions_status->SimpleXML->version,
             'soap_status' => $datos_hc->php_extensions_status->soap->status,
             'soap_version' => $datos_hc->php_extensions_status->soap->version,
-            'mcrypt_status' => $datos_hc->php_extensions_status->mcrypt->status,
-            'mcrypt_version' => $datos_hc->php_extensions_status->mcrypt->version,
             'dom_status' => $datos_hc->php_extensions_status->dom->status,
             'dom_version' => $datos_hc->php_extensions_status->dom->version,
             'php_info' => $datos_hc->php_info->string->content,
