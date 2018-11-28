@@ -175,7 +175,7 @@ Puedes aceptar o rechazar la transacción
 
  ![demo13](img/demo13.png)
 
-* Además si accedes al sitio de administración seccion (Sales / Ordes) se podrá ver la orden creada y el detalle de los datos entregados por Webpay.
+* Además si accedes al sitio de administración sección (Sales / Ordes) se podrá ver la orden creada y el detalle de los datos entregados por Webpay.
 
  ![order1](img/order1.png)
 
