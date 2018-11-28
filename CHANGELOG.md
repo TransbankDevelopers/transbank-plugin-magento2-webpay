@@ -4,6 +4,11 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.4] - 2018-11-28
+### Changed
+- Se mejora la experiencia de pago con webpay.
+- Se elimina configuración de logs en sección de administración.
+
 ## [3.1.3] - 2018-11-27
 ### Changed
 - Se mejora la creación del pdf de diagnóstico.
