@@ -3,7 +3,6 @@ namespace Transbank\Webpay\Model;
 
 class HealthCheck {
 
-    var $phpinfo;
     var $publicCert;
     var $privateKey;
     var $webpayCert;
@@ -25,12 +24,6 @@ class HealthCheck {
         $this->privateKey = $config['PRIVATE_KEY'];
         $this->webpayCert = $config['WEBPAY_CERT'];
         $this->ecommerce = $config['ECOMMERCE'];
-
-        $this->resume = null;
-        $this->fullResume = null;
-        $this->versioninfo = null;
-        $this->certificates = null;
-
         // extensiones necesarias
         $this->extensions = array(
             'openssl',
@@ -171,12 +164,12 @@ class HealthCheck {
 
     // arma array con informacion del ultimo plugin compatible con el ecommerce
     /*
-	  vers_product:
-	  1 => WebPay Soap
-      2 => WebPay REST
-      3 => PatPass
-      4 => OnePay
-	  */
+    vers_product:
+    1 => WebPay Soap
+    2 => WebPay REST
+    3 => PatPass
+    4 => OnePay
+    */
     private function getPluginLastVersion($ecommerce, $currentversion) {
         return 'Indefinido';
     }
@@ -223,10 +216,10 @@ class HealthCheck {
         return $return;
     }
 
-    private function setInitTransaction() {
+    public function setInitTransaction() {
         $transbankSdkWebpay = new TransbankSdkWebpay($this->config);
-        $amount = 9990;
-        $buyOrder = "_HealthCheck_";
+        $amount = 990;
+        $buyOrder = "_Healthcheck_";
         $sessionId = uniqid();
         $returnUrl = "https://webpay3gint.transbank.cl/filtroUnificado/initTransaction";
         $finalUrl = "https://webpay3gint.transbank.cl/filtroUnificado/initTransaction";
@@ -265,7 +258,6 @@ class HealthCheck {
         return false;
     }
 
-    //funciones de impresion
     // imprime informacion de comercio y llaves
     public function printCommerceInfo() {
         return json_encode($this->getCommerceInfo());
