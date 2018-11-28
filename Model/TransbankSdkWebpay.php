@@ -40,29 +40,31 @@ class TransbankSdkWebpay {
 					"token_ws" => $initResult->token
 				);
             } else {
-                throw new \Exception("No se ha creado la transacción");
+                throw new \Exception('No se ha creado la transacción para, amount: ' . $amount . ', sessionId: ' . $sessionId . ', buyOrder: ' . $buyOrder);
             }
 		} catch(\Exception $e) {
             $result = array(
-                "error" => 'Error conectando a Webpay',
+                "error" => 'Error al crear la transacción',
                 "detail" => $e->getMessage()
             );
+            $this->log->logError(json_encode($result));
 		}
 		return $result;
     }
 
     public function commitTransaction($tokenWs) {
         $result = array();
-        try {
+        try{
             if ($tokenWs == null) {
                 throw new \Exception("El token webpay es requerido");
             }
             return $this->transaction->getTransactionResult($tokenWs);
         } catch(\Exception $e) {
             $result = array(
-                "error" => 'Error conectando a Webpay',
+                "error" => 'Error al confirmar la transacción',
                 "detail" => $e->getMessage()
             );
+            $this->log->logError(json_encode($result));
         }
         return $result;
     }

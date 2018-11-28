@@ -235,8 +235,8 @@
 
         <div id="modal_logs" class="tab-pane">
             <fieldset>
-                <h3 class="tbk_title_h3">Configuración</h3>
-                <table class="tbk_table_info">
+                <h3 class="tbk_title_h3" style="display: none !important;">Configuración</h3>
+                <table class="tbk_table_info" style="display: none !important;">
                     <tr>
                         <td><div title="Al activar esta opción se habilita que se guarden los datos de cada compra mediante Webpay" class="label label-info">?</div> <strong>Activar Registro: </strong></td>
                         <td class="tbk_table_td">
@@ -251,7 +251,7 @@
                     </tr>
                 </table>
 
-                <table class="tbk_table_info">
+                <table class="tbk_table_info" style="display: none !important;">
                     <tr>
                         <td><div title="Cantidad de días que se conservan los datos de cada compra mediante Webpay" class="label label-info">?</div> <strong>Cantidad de Días a Registrar: </strong></td>
                         <td class="tbk_table_td"><input id="days" name="days" type="number" min="1" max="30" value="<?php echo $this->tbk_data['log_days']?>"> días</td>
@@ -272,14 +272,16 @@
                 </table>
 
                 <br>
-                <a id="btn-save-data-conf" class="tbk_btn tbk_danger_btn" href="javascript:void();">
+                <a id="btn-save-data-conf" class="tbk_btn tbk_danger_btn" href="javascript:void();" style="display: none !important;">
                 Actualizar Parametros
                 </a>
 
                 <h3 class="tbk_title_h3">Información de Registros</h3>
                 <table class="tbk_table_info">
-                    <tr>
-                        <td><div title="Informa si actualmente se guarda la información de cada compra mediante Webpay" class="label label-info">?</div> <strong>Estado de Registros: </strong></td>
+                    <tr style="display: none !important;">
+                        <td>
+                            <div title="Informa si actualmente se guarda la información de cada compra mediante Webpay" class="label label-info">?</div> <strong>Estado de Registros: </strong>
+                        </td>
                         <td class="tbk_table_td">
                             <?php
                             if ($this->tbk_data['lockfile']){
