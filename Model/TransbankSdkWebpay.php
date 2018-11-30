@@ -1,6 +1,8 @@
 <?php
 namespace Transbank\Webpay\Model;
 
+require_once(BP . '/vendor/transbank/transbank-sdk/init.php');
+
 use Transbank\Webpay\Model\LogHandler;
 use Transbank\Webpay\Configuration;
 use Transbank\Webpay\Webpay;
@@ -10,9 +12,9 @@ class TransbankSdkWebpay {
     var $transaction;
 
     function __construct($config) {
+        $this->log = new LogHandler();
         $environment = isset($config["MODO"]) ? $config["MODO"] : 'INTEGRACION';
         $configuration = Configuration::forTestingWebpayPlusNormal();
-        $this->log = new LogHandler();
         if ($environment != Webpay::INTEGRACION) {
             $configuration = new Configuration();
             $configuration->setEnvironment(Webpay::PRODUCCION);
