@@ -7,6 +7,7 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 ## [3.1.5] - 2018-11-30
 ### Changed
 - Se mejora la experiencia de pago con webpay.
+### Fixed
 - Se corrige un problema al cargar el sdk de webpay
 
 ## [3.1.4] - 2018-11-28
