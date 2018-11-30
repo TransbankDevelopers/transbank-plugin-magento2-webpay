@@ -91,7 +91,9 @@ RUN chown -Rf www-data:www-data /var/www /var/www/.*
 RUN usermod -u 1000 www-data
 RUN chsh -s /bin/bash www-data
 RUN a2enmod rewrite
-RUn a2enmod headers
+RUN a2enmod headers
+
+RUN mkdir -p /var/www/plugin
 
 VOLUME /var/www/html
 WORKDIR /var/www/html

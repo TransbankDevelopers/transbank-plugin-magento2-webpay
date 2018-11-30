@@ -3,9 +3,9 @@ services:
   apache:
     build: .
     ports:
-      - "80:80" # web
+      - "80:80"
     volumes:
-      - ./src:/var/www/html
+      - ./plugin:/var/www/plugin
       - ~/.composer:/var/www/.composer
       - ~/.npm:/var/www/.npm
     environment:
@@ -28,18 +28,6 @@ services:
       - MYSQL_PASSWORD=magento
     volumes:
       - dbdata:/var/lib/mysql
-    networks:
-      - magento2-network
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    environment:
-     - PMA_HOST=db
-     - PMA_USER=root
-     - PMA_PASSWORD=root
-     - MYSQL_ROOT_PASSWORD=root
-    ports:
-     - 8090:80
     networks:
       - magento2-network
 
