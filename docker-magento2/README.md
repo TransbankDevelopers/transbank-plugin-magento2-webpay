@@ -37,7 +37,8 @@ Para instalar Magento 2, hacer lo siguiente:
 Además se puede especificar la versión a instalar (e.j. `install-magento2 2.2.6`).
 
 ```
-./init
+./start
+./shell
 install-magento2 2.2.6
 magento sampledata:deploy && magento setup:upgrade && magento setup:di:compile && magento setup:static-content:deploy
 cp pub/errors/local.xml.sample pub/errors/local.xml
@@ -45,13 +46,7 @@ cp pub/errors/local.xml.sample pub/errors/local.xml
 
 ### Como usar
 
-### Construir el contenedor desde cero
-
-```
-./init
-```
-
-### Iniciar el contenedor construido anteriormente
+### Iniciar el contenedor
 
 ```
 ./start
@@ -61,6 +56,19 @@ cp pub/errors/local.xml.sample pub/errors/local.xml
 
 ```
 ./shell
+```
+
+### Copiar el plugin al contenedor
+
+```
+./copy-plugin
+```
+
+### Desplegar el plugin dentro de contenedor anteriormente copiado
+
+```
+./shell
+./deploy-plugin
 ```
 
 ### Instala el plugin de Onepay en magento2 siguiendo el README
@@ -82,13 +90,10 @@ cp pub/errors/local.xml.sample pub/errors/local.xml
 
 | Comandos  | Descripcion  | Opciones & Ejemplos |
 |---|---|---|
-| `./init`  | Crea los contenedores, images, volemes, etc.. |
 | `./start`  | Iniciar los contenedores  | |
 | `./stop`  | Detener los contenedores  | |
 | `./kill`  | Detener los contendores y eliminar contenedores, networks, volumes, e images creadas para el proyecto  | |
 | `./shell`  | Aceder al contenedor  | `./shell root` | |
-| `./magento`  | Usar Magento CLI | |
-| `./composer`  |  Usar comando Composer | `./composer update` |
 
 ### Licencia
 
