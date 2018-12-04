@@ -41,7 +41,6 @@ Además se puede especificar la versión a instalar (e.j. `install-magento2 2.2.
 ./shell
 install-magento2 2.2.6
 magento sampledata:deploy && magento setup:upgrade && magento setup:di:compile && magento setup:static-content:deploy
-cp pub/errors/local.xml.sample pub/errors/local.xml
 ```
 
 ### Como usar
