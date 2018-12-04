@@ -1,6 +1,6 @@
 {
     "name": "transbank/webpay-magento2",
-    "description": "Pago via tarjetas debito y credito a travez de transbank",
+    "description": "Plugin oficial de magento2 para Webpay",
     "require": {
         "magento/module-sales": ">100.0",
         "magento/module-checkout": ">100.0",
@@ -27,5 +27,6 @@
             "/.gitignore",
             "/.gitattributes"
         ]
-    }
+    },
+    "license": "BSD-3-Clause"
 }
