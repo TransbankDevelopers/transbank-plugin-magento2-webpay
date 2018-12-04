@@ -14,7 +14,6 @@ El plugin depende de las siguientes librerías:
 * tecnickcom/tcpdf
 
 ## Nota  
-- La versión del plugin se encuentra en `composer.json` y `etc/config.xml`
 - La versión del sdk de php se encuentra en el archivo `composer.json`
 - La versión del plugin se encuentra en los archivos `composer.json` y `etc/module.xml`
 
