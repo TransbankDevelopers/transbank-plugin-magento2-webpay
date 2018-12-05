@@ -94,7 +94,6 @@ RUN a2enmod rewrite
 RUN a2enmod headers
 
 RUN mkdir -p /var/www/plugin
-RUN cp /var/www/html/pub/errors/local.xml.sample /var/www/html/pub/errors/local.xml
 
 VOLUME /var/www/html
 WORKDIR /var/www/html

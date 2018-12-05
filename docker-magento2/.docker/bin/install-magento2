@@ -44,3 +44,4 @@ php -f ./bin/magento deploy:mode:set production \
       🔑 Password: password
 
 ===================== 🚀 Done 🚀 ==================="
+cp /var/www/html/pub/errors/local.xml.sample /var/www/html/pub/errors/local.xml
