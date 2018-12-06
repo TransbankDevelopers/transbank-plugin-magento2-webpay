@@ -41,7 +41,7 @@ php -f ./bin/magento deploy:mode:set production \
 
       🌎 Admin: http://localhost/admin
       👤 User: admin
-      🔑 Password: password
+      🔑 Password: admin123
 
 ===================== 🚀 Done 🚀 ==================="
 cp /var/www/html/pub/errors/local.xml.sample /var/www/html/pub/errors/local.xml
