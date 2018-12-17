@@ -2,14 +2,15 @@
     "name": "transbank/webpay-magento2",
     "description": "Plugin oficial de magento2 para Webpay",
     "require": {
-        "magento/module-sales": ">100.0",
-        "magento/module-checkout": ">100.0",
-        "magento/module-payment": ">100.0",
-        "magento/framework": ">100.0",
-        "transbank/transbank-sdk": "1.4.3"
+        "magento/module-sales": "101.0.*",
+        "magento/module-quote": "101.0.*",
+        "magento/module-checkout": "100.2.*",
+        "magento/module-payment": "100.2.*",
+        "magento/framework": "101.0.*",
+        "transbank/transbank-sdk": "1.4.4"
     },
     "type": "magento2-module",
-    "version": "3.1.5",
+    "version": "3.1.6",
     "extra": {
         "map": [
             [

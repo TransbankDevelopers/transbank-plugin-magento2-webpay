@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.6] - 2018-12-17
+### Fixed
+- Actualiza sdk php a 1.4.4 que corrige problema de carga de clases Linux.
+
 ## [3.1.5] - 2018-11-30
 ### Changed
 - Se mejora la experiencia de pago con webpay.
