@@ -6,7 +6,7 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 
 ## [3.1.6] - 2018-12-17
 ### Fixed
-- Actualiza sdk php a 1.4.4 que corrige proble de carga de clases en Linux.
+- Actualiza sdk php a 1.4.4 que corrige proble de carga de clases.
 
 ## [3.1.5] - 2018-11-30
 ### Changed
