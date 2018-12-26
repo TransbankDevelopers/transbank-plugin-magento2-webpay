@@ -35,6 +35,17 @@ class HealthCheck {
 
     // validacion certificado publico versus la llave
     private function getValidateCertificates() {
+        $this->certinfo = array(
+            'subject_commerce_code' => $this->commerceCode,
+            'version' => 'Error',
+            'is_valid' => 'Error',
+            'valid_from' => 'Error',
+            'valid_to' => 'Error',
+        );
+        $this->certificates = array(
+            'cert_vs_private_key' => 'Error!: Certificados inconsistentes',
+            'commerce_code_validate' => 'Error'
+        );
         if ($var = openssl_x509_parse($this->publicCert)) {
             $today = date('Y-m-d H:i:s');
             $from = date('Y-m-d H:i:s', $var['validFrom_time_t']);
@@ -51,14 +62,6 @@ class HealthCheck {
                 'valid_from' => date('Y-m-d H:i:s', $var['validFrom_time_t']),
                 'valid_to' => date('Y-m-d H:i:s', $var['validTo_time_t']),
             );
-        } else {
-            $this->certinfo = array(
-                'subject_commerce_code' => $this->commerceCode,
-                'version' => 'Error',
-                'is_valid' => 'Error',
-                'valid_from' => 'Error',
-                'valid_to' => 'Error',
-            );
         }
         if (openssl_x509_check_private_key($this->publicCert, $this->privateKey)) {
             if ($this->commerceCode == $this->certinfo['subject_commerce_code']) {
@@ -67,18 +70,13 @@ class HealthCheck {
                     'commerce_code_validate' => 'OK'
                 );
             }
-        } else {
-            $this->certificates = array(
-                'cert_vs_private_key' => 'Error!: Certificados inconsistentes',
-                'commerce_code_validate' => 'Error'
-            );
         }
         return array('consistency' => $this->certificates, 'cert_info' => $this->certinfo);
     }
 
     // valida version de php
     private function getValidatephp() {
-        if (version_compare(phpversion(), '7.1.24', '<=') and version_compare(phpversion(), '5.4.0', '>=')) {
+        if (version_compare(phpversion(), '7.1.25', '<=') and version_compare(phpversion(), '5.5.0', '>=')) {
             $this->versioninfo = array(
                 'status' => 'OK',
                 'version' => phpversion()
