@@ -152,17 +152,32 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
             $tipoCuotas = "Sin cuotas";
         }
 
+        if ($result->detailOutput->responseCode == 0) {
+            $transactionResponse = "Transacci&oacute;n Aprobada";
+        } else {
+            $transactionResponse = "Transacci&oacute;n Rechazada";
+        }
+
+        if($result->detailOutput->paymentTypeCode == "VD"){
+            $paymentType = "Débito";
+        } else {
+            $paymentType = "Crédito";
+        }
+
 		$message = "<h2>Detalles del pago con Webpay</h2>
         <p>
             <br>
-            <b>Respuesta de la Transacci&oacute;n: </b>{$result->detailOutput->responseCode}<br>
+            <b>Respuesta de la Transacci&oacute;n: </b>{$transactionResponse}<br>
+            <b>C&oacute;digo de la Transacci&oacute;n: </b>{$result->detailOutput->responseCode}<br>
             <b>Monto:</b> $ {$result->detailOutput->amount}<br>
             <b>Order de Compra: </b> {$result->detailOutput->buyOrder}<br>
             <b>Fecha de la Transacci&oacute;n: </b>".date('d-m-Y', strtotime($result->transactionDate))."<br>
             <b>Hora de la Transacci&oacute;n: </b>".date('H:i:s', strtotime($result->transactionDate))."<br>
             <b>Tarjeta: </b>************{$result->cardDetail->cardNumber}<br>
             <b>C&oacute;digo de autorizacion: </b>{$result->detailOutput->authorizationCode}<br>
-            <b>N&uacute;mero de cuotas: </b>{$tipoCuotas}
+            <b>Tipo de Pago: </b>{$paymentType}<br>
+            <b>Tipo de Cuotas: </b>{$tipoCuotas}<br>
+            <b>N&uacute;mero de cuotas: </b>{$result->detailOutput->sharesNumber}
         </p>";
         return $message;
     }
