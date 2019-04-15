@@ -19,7 +19,7 @@ class TransbankSdkWebpay {
 
             if ($environment != 'INTEGRACION') {
                 $configuration->setEnvironment($environment);
-                $configuration->setPublicCert(Webpay::defaultCert($environment));
+                $configuration->setWebpayCert(Webpay::defaultCert($environment));
                 $configuration->setCommerceCode($config["COMMERCE_CODE"]);
                 $configuration->setPrivateKey($config["PRIVATE_KEY"]);
                 $configuration->setPublicCert($config["PUBLIC_CERT"]);
