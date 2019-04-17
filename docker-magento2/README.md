@@ -41,6 +41,7 @@ Además se puede especificar la versión a instalar (e.j. `install-magento2 2.2.
 ./shell
 install-magento2 2.2.6
 magento sampledata:deploy && magento setup:upgrade && magento setup:di:compile && magento setup:static-content:deploy
+composer require transbank/transbank-sdk:VERSION
 ```
 
 ### Como usar
@@ -67,7 +68,7 @@ magento sampledata:deploy && magento setup:upgrade && magento setup:di:compile &
 
 ```
 ./shell
-./deploy-plugin
+deploy-plugin
 ```
 
 ### Instala el plugin de Onepay en magento2 siguiendo el README
