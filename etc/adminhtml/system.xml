@@ -42,9 +42,6 @@
                     <field id="public_cert" translate="label" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Certificado Publico</label>
                     </field>
-                    <field id="webpay_cert" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Certificado Webpay</label>
-                    </field>
                     <field id="sucefully_pay" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Estado de Pago Exitoso</label>
                         <source_model>Transbank\Webpay\Model\Config\OrderStatus</source_model>
