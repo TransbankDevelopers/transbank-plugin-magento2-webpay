@@ -24,6 +24,7 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
                                 \Magento\Checkout\Model\Cart $cart,
                                 \Magento\Checkout\Model\Session $checkoutSession,
                                 \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
+                                \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
                                 \Transbank\Webpay\Model\Config\ConfigProvider $configProvider) {
 
         parent::__construct($context);
@@ -31,6 +32,7 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
         $this->cart = $cart;
         $this->checkoutSession = $checkoutSession;
         $this->resultJsonFactory = $resultJsonFactory;
+        $this->resultRawFactory = $resultRawFactory;
         $this->messageManager = $context->getMessageManager();
         $this->configProvider = $configProvider;
         $this->log = new LogHandler();
@@ -132,15 +134,17 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
     }
 
     private function toRedirect($url, $data) {
-        echo "<form action='$url' method='POST' name='webpayForm'>";
+        $result = $this->resultRawFactory->create();
+        $content = "<form action='$url' method='POST' name='webpayForm'>";
         foreach ($data as $name => $value) {
-            echo "<input type='hidden' name='".htmlentities($name)."' value='".htmlentities($value)."'>";
+            $content .= "<input type='hidden' name='".htmlentities($name)."' value='".htmlentities($value)."'>";
         }
-        echo "</form>";
-        echo "<script language='JavaScript'>"
+        $content .= "</form>";
+        $content .= "<script language='JavaScript'>"
                 ."document.webpayForm.submit();"
                 ."</script>";
-        return true;
+        $result->setContents($content);
+        return $result;
     }
 
     private function getSuccessMessage($result) {
