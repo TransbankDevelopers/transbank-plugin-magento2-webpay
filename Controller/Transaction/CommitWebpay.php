@@ -24,6 +24,7 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
                                 \Magento\Checkout\Model\Cart $cart,
                                 \Magento\Checkout\Model\Session $checkoutSession,
                                 \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
+                                \Magento\Framework\Controller\Result\RawFactory $resultRawFactory,
                                 \Transbank\Webpay\Model\Config\ConfigProvider $configProvider) {
 
         parent::__construct($context);
@@ -31,6 +32,7 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
         $this->cart = $cart;
         $this->checkoutSession = $checkoutSession;
         $this->resultJsonFactory = $resultJsonFactory;
+        $this->resultRawFactory = $resultRawFactory;
         $this->messageManager = $context->getMessageManager();
         $this->configProvider = $configProvider;
         $this->log = new LogHandler();
@@ -132,19 +134,17 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
     }
 
     private function toRedirect($url, $data) {
-  
-        $response = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_RAW);
-        $response->setHeader('Content-type', 'text/html');
-         
-        $html = "<form action='$url' method='POST' name='webpayForm'>";
+        $response = $this->resultRawFactory->create();
+        $content = "<form action='$url' method='POST' name='webpayForm'>";
         foreach ($data as $name => $value) {
-            $html.="<input type='hidden' name='".htmlentities($name)."' value='".htmlentities($value)."'>";
+            $content .= "<input type='hidden' name='".htmlentities($name)."' value='".htmlentities($value)."'>";
         }
-        $html.="</form>";
-        $html.="<script language='JavaScript'> document.webpayForm.submit(); </script>";
-         
-        $response->setContents($html); 
-        return $response; 
+        $content .= "</form>";
+        $content .= "<script language='JavaScript'>"
+                ."document.webpayForm.submit();"
+                ."</script>";
+        $response->setContents($content);
+        return $response;
     }
 
     private function getSuccessMessage($result) {
