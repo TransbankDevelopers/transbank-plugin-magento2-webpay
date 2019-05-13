@@ -132,15 +132,19 @@ class CommitWebpay extends \Magento\Framework\App\Action\Action {
     }
 
     private function toRedirect($url, $data) {
-        echo "<form action='$url' method='POST' name='webpayForm'>";
+  
+        $response = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_RAW);
+        $response->setHeader('Content-type', 'text/html');
+         
+        $html = "<form action='$url' method='POST' name='webpayForm'>";
         foreach ($data as $name => $value) {
-            echo "<input type='hidden' name='".htmlentities($name)."' value='".htmlentities($value)."'>";
+            $html.="<input type='hidden' name='".htmlentities($name)."' value='".htmlentities($value)."'>";
         }
-        echo "</form>";
-        echo "<script language='JavaScript'>"
-                ."document.webpayForm.submit();"
-                ."</script>";
-        return true;
+        $html.="</form>";
+        $html.="<script language='JavaScript'> document.webpayForm.submit(); </script>";
+         
+        $response->setContents($html); 
+        return $response; 
     }
 
     private function getSuccessMessage($result) {
