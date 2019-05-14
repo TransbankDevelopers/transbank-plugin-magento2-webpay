@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.12] - 2019-05-13
+### Fixed
+- Corrige la redirección al voucher de una transacción confirmada en estado "Esperando".
+
 ## [3.1.11] - 2019-04-17
 ### Fixed
 - Corrige configuración, Ya no es necesario incluir el certificado de Webpay
