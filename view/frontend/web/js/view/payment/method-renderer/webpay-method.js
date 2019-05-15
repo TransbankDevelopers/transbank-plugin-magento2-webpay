@@ -8,17 +8,21 @@ define(
         'Magento_Checkout/js/checkout-data',
         'Magento_Checkout/js/model/payment/additional-validators',
         'mage/url',
-        'Magento_Checkout/js/model/quote'
+        'Magento_Checkout/js/model/quote',
+        'Magento_Checkout/js/model/full-screen-loader',
+        'Magento_Checkout/js/action/set-payment-information'
     ],
     function ($,
-              Component,
-              placeOrderAction,
-              selectPaymentMethodAction,
-              customer,
-              checkoutData,
-              additionalValidators,
-              url,
-              quote) {
+        Component,
+        placeOrderAction,
+        selectPaymentMethodAction,
+        customer,
+        checkoutData,
+        additionalValidators,
+        url,
+        quote,
+        fullScreenLoader,
+        setPaymentInformationAction) {
         'use strict';
 
         return Component.extend({
@@ -26,38 +30,57 @@ define(
                 template: 'Transbank_Webpay/payment/webpay'
             },
 
-            getCode: function() {
-              return 'transbank_webpay';
+            getCode: function () {
+                return 'transbank_webpay';
             },
-            getTitle: function() {
+            getTitle: function () {
                 return "Transbank Webpay";
             },
-            placeOrder: function() {
+            placeOrder: function () {
+                var self = this;
 
-                $('.loading-mask').show();
+                if (this.validate() && additionalValidators.validate()) {
+                    this.isPlaceOrderActionAllowed(false);
+                    fullScreenLoader.startLoader();
 
-                var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
+                    $.when(
+                        setPaymentInformationAction(this.messageContainer, self.getData())
+                    ).done(
+                        function () {
+                            var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
 
-                if (quote.guestEmail) {
-                    url+='?guestEmail=' + encodeURIComponent(quote.guestEmail);
+                            if (quote.guestEmail) {
+                                url += '?guestEmail=' + encodeURIComponent(quote.guestEmail);
+                            }
+
+                            $.getJSON(url, function (result) {
+                                if (result != undefined && result.token_ws != undefined) {
+                                    var form = $('<form action="' + result.url + '" method="post">' +
+                                        '<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
+                                        '</form>');
+                                    $('body').append(form);
+                                    form.submit();
+
+                                    fullScreenLoader.stopLoader();
+                                } else {
+                                    alert('Error al crear transacción');
+                                }
+                            });
+
+                            self.placeOrderHandler().fail(
+                                function () {
+                                    fullScreenLoader.stopLoader();
+                                }
+                            );
+                        }
+                    ).always(
+                        function () {
+                            self.isPlaceOrderActionAllowed(true);
+                            fullScreenLoader.stopLoader();
+                        }
+                    );
+
                 }
-
-                $.getJSON(url, function(result) {
-
-                    if (result != undefined && result.token_ws != undefined){
-
-                        var form = $('<form action="' + result.url + '" method="post">' +
-                                    '<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
-                                    '</form>');
-                        $('body').append(form);
-                        form.submit();
-
-                        $('.loading-mask').hide();
-
-                    } else {
-                        alert('Error al crear transacción');
-                    }
-                });
             }
         })
     }
