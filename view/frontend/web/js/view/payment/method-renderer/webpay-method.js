@@ -36,52 +36,61 @@ define(
             getTitle: function () {
                 return "Transbank Webpay";
             },
-            placeOrder: function () {
+            placeOrder: function (data, event) {
                 var self = this;
+
+                if (event) {
+                    event.preventDefault();
+                }
 
                 if (this.validate() && additionalValidators.validate()) {
                     this.isPlaceOrderActionAllowed(false);
-                    fullScreenLoader.startLoader();
 
-                    $.when(
-                        setPaymentInformationAction(this.messageContainer, self.getData())
-                    ).done(
-                        function () {
-                            var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
-
-                            if (quote.guestEmail) {
-                                url += '?guestEmail=' + encodeURIComponent(quote.guestEmail);
+                    this.getPlaceOrderDeferredObject()
+                        .fail(
+                            function () {
+                                self.isPlaceOrderActionAllowed(true);
                             }
+                        ).done(
+                            function () {
+                                self.afterPlaceOrder();
 
-                            $.getJSON(url, function (result) {
-                                if (result != undefined && result.token_ws != undefined) {
-                                    var form = $('<form action="' + result.url + '" method="post">' +
-                                        '<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
-                                        '</form>');
-                                    $('body').append(form);
-                                    form.submit();
+                                var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
 
-                                    fullScreenLoader.stopLoader();
-                                } else {
-                                    alert('Error al crear transacción');
+                                if (quote.guestEmail) {
+                                    url += '?guestEmail=' + encodeURIComponent(quote.guestEmail);
                                 }
-                            });
 
-                            self.placeOrderHandler().fail(
-                                function () {
-                                    fullScreenLoader.stopLoader();
-                                }
-                            );
-                        }
-                    ).always(
-                        function () {
-                            self.isPlaceOrderActionAllowed(true);
-                            fullScreenLoader.stopLoader();
-                        }
-                    );
-
+                                $.getJSON(url, function (result) {
+                                    if (result != undefined && result.token_ws != undefined) {
+                                        var form = $('<form action="' + result.url + '" method="post">' +
+                                            '<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
+                                            '</form>');
+                                        $('body').append(form);
+                                        form.submit();
+                                    } else {
+                                        alert('Error al crear transacción');
+                                    }
+                                });
+                            }
+                        ).always(
+                            function () {
+                                self.isPlaceOrderActionAllowed(true);
+                                fullScreenLoader.stopLoader();
+                            }
+                        );
+                    return true;
                 }
-            }
+                return false;
+
+            },
+
+            getPlaceOrderDeferredObject: function () {
+                return $.when(
+                    placeOrderAction(this.getData(), this.messageContainer)
+                );
+            },
+
         })
     }
 );
