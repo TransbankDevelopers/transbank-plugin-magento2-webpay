@@ -8,17 +8,21 @@ define(
         'Magento_Checkout/js/checkout-data',
         'Magento_Checkout/js/model/payment/additional-validators',
         'mage/url',
-        'Magento_Checkout/js/model/quote'
+        'Magento_Checkout/js/model/quote',
+        'Magento_Checkout/js/model/full-screen-loader',
+        'Magento_Checkout/js/action/set-payment-information'
     ],
     function ($,
-              Component,
-              placeOrderAction,
-              selectPaymentMethodAction,
-              customer,
-              checkoutData,
-              additionalValidators,
-              url,
-              quote) {
+        Component,
+        placeOrderAction,
+        selectPaymentMethodAction,
+        customer,
+        checkoutData,
+        additionalValidators,
+        url,
+        quote,
+        fullScreenLoader,
+        setPaymentInformationAction) {
         'use strict';
 
         return Component.extend({
@@ -26,39 +30,67 @@ define(
                 template: 'Transbank_Webpay/payment/webpay'
             },
 
-            getCode: function() {
-              return 'transbank_webpay';
+            getCode: function () {
+                return 'transbank_webpay';
             },
-            getTitle: function() {
+            getTitle: function () {
                 return "Transbank Webpay";
             },
-            placeOrder: function() {
+            placeOrder: function (data, event) {
+                var self = this;
 
-                $('.loading-mask').show();
-
-                var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
-
-                if (quote.guestEmail) {
-                    url+='?guestEmail=' + encodeURIComponent(quote.guestEmail);
+                if (event) {
+                    event.preventDefault();
                 }
 
-                $.getJSON(url, function(result) {
+                if (this.validate() && additionalValidators.validate()) {
+                    this.isPlaceOrderActionAllowed(false);
 
-                    if (result != undefined && result.token_ws != undefined){
+                    this.getPlaceOrderDeferredObject()
+                        .fail(
+                            function () {
+                                self.isPlaceOrderActionAllowed(true);
+                            }
+                        ).done(
+                            function () {
+                                self.afterPlaceOrder();
 
-                        var form = $('<form action="' + result.url + '" method="post">' +
-                                    '<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
-                                    '</form>');
-                        $('body').append(form);
-                        form.submit();
+                                var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
 
-                        $('.loading-mask').hide();
+                                if (quote.guestEmail) {
+                                    url += '?guestEmail=' + encodeURIComponent(quote.guestEmail);
+                                }
 
-                    } else {
-                        alert('Error al crear transacción');
-                    }
-                });
-            }
+                                $.getJSON(url, function (result) {
+                                    if (result != undefined && result.token_ws != undefined) {
+                                        var form = $('<form action="' + result.url + '" method="post">' +
+                                            '<input type="text" name="token_ws" value="' + result.token_ws + '" />' +
+                                            '</form>');
+                                        $('body').append(form);
+                                        form.submit();
+                                    } else {
+                                        alert('Error al crear transacción');
+                                    }
+                                });
+                            }
+                        ).always(
+                            function () {
+                                self.isPlaceOrderActionAllowed(true);
+                                fullScreenLoader.stopLoader();
+                            }
+                        );
+                    return true;
+                }
+                return false;
+
+            },
+
+            getPlaceOrderDeferredObject: function () {
+                return $.when(
+                    placeOrderAction(this.getData(), this.messageContainer)
+                );
+            },
+
         })
     }
 );
