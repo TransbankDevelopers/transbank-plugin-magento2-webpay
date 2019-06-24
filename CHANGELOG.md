@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2019-06-24
+### Changed
+- Se añade soporte comprobado al plugin hasta php 7.2 + Magento 2.3.1.
+
 ## [3.1.12] - 2019-05-13
 ### Fixed
 - Corrige la redirección al voucher de una transacción confirmada en estado "Esperando".
