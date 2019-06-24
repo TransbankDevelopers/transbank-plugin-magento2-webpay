@@ -83,7 +83,7 @@ class HealthCheck {
             );
         } else {
             $this->versioninfo = array(
-                'status' => 'Error!: Version no soportada',
+                'status' => 'WARN: El plugin no ha sido testeado con esta version',
                 'version' => phpversion()
             );
         }
