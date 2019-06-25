@@ -76,14 +76,14 @@ class HealthCheck {
 
     // valida version de php
     private function getValidatephp() {
-        if (version_compare(phpversion(), '7.1.25', '<=') and version_compare(phpversion(), '5.5.0', '>=')) {
+        if (version_compare(phpversion(), '7.2.1', '<=') and version_compare(phpversion(), '5.5.0', '>=')) {
             $this->versioninfo = array(
                 'status' => 'OK',
                 'version' => phpversion()
             );
         } else {
             $this->versioninfo = array(
-                'status' => 'Error!: Version no soportada',
+                'status' => 'WARN: El plugin no ha sido testeado con esta version',
                 'version' => phpversion()
             );
         }
