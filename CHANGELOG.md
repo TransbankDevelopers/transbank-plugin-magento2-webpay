@@ -6,7 +6,7 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 
 ## [3.2.2] - 2019-07-01
 ### Fixed
-- para evitar errores en la instalación, se removió la especificación de módulos de Magento en composer.json.
+- Para evitar errores en la instalación, se removió la especificación de módulos de Magento en composer.json.
 
 ## [3.2.1] - 2019-06-26
 ### Fixed
