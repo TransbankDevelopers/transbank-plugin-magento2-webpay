@@ -46,12 +46,7 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action {
             $orderStatusPendingPayment = $config['order_status'];
 
             $tmpOrder = $this->getOrder();
-
-            if ($tmpOrder != null && $tmpOrder->getStatus() == $orderStatusPendingPayment) {
-                $tmpOrder->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
-                $tmpOrder->save();
-                $this->checkoutSession->restoreQuote();
-            }
+            $this->checkoutSession->restoreQuote();
 
             $quote = $this->cart->getQuote();
 
@@ -67,10 +62,10 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action {
 
             $quote->getPayment()->importData(['method' => Webpay::CODE]);
             $quote->collectTotals()->save();
-            $order = $this->quoteManagement->submit($quote);
-
-            $order->setState($orderStatusPendingPayment)->setStatus($orderStatusPendingPayment);
-            $order->save();
+            $order = $tmpOrder;
+            if ($tmpOrder != null && $tmpOrder->getStatus() == $orderStatusCanceled) {
+                $order = $this->quoteManagement->submit($quote);
+            }
 
             $this->checkoutSession->setLastQuoteId($quote->getId());
             $this->checkoutSession->setLastSuccessQuoteId($quote->getId());
@@ -97,6 +92,7 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action {
                 $this->checkoutSession->setTokenWs($response['token_ws']);
                 $this->checkoutSession->setPaymentOk('WAITING');
             } else {
+                $order->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
                 $this->checkoutSession->setPaymentOk('ERROR');
                 $message = "<h3>Error en pago con Webpay</h3><br>" . json_encode($response);
             }
