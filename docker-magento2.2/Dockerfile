@@ -1,4 +1,4 @@
-FROM php:7.1-apache
+FROM php:7.1-apache-stretch
 
 # Install System Dependencies
 RUN apt-get update \
