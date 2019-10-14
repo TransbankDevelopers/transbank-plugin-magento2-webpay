@@ -92,7 +92,9 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action {
                 $this->checkoutSession->setTokenWs($response['token_ws']);
                 $this->checkoutSession->setPaymentOk('WAITING');
             } else {
-                $order->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
+                $order->cancel();
+                $order->save();
+                $order->setStatus($orderStatusCanceled);
                 $this->checkoutSession->setPaymentOk('ERROR');
                 $message = "<h3>Error en pago con Webpay</h3><br>" . json_encode($response);
             }
@@ -108,7 +110,9 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action {
             $this->log->logError($message);
             $response = array('error' => $message);
             if ($order != null) {
-                $order->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
+                $order->cancel();
+                $order->save();
+                $order->setStatus($orderStatusCanceled);
                 $order->addStatusToHistory($order->getStatus(), $message);
                 $order->save();
             }
