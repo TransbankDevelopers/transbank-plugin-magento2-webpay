@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.2.4] - 2019-10-16
+### Fixed
+- Corrige manejo de stock cuando el pago no es completado y la orden es cancelada. La cantidad es retornada al stock disponible.
+
 ## [3.2.3] - 2019-08-20
 ### Fixed
 - Corrige duplicación de órdenes de compra al inicial el pago con Webpay.
