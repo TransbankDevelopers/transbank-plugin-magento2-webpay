@@ -88,8 +88,10 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action {
                 } else {
 
                     $this->checkoutSession->setPaymentOk('FAIL');
+                    $order->cancel();
+                    $order->save();
+                    $order->setStatus($orderStatusCanceled);
 
-                    $order->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
                     $order->addStatusToHistory($order->getStatus(), json_encode($result));
                     $order->save();
 
@@ -126,7 +128,9 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action {
             $this->checkoutSession->restoreQuote();
             $this->messageManager->addError(__($message));
             if ($order != null) {
-                $order->setState($orderStatusCanceled)->setStatus($orderStatusCanceled);
+                $order->cancel();
+                $order->save();
+                $order->setStatus($orderStatusCanceled);
                 $order->addStatusToHistory($order->getStatus(), $message);
                 $order->save();
             }
