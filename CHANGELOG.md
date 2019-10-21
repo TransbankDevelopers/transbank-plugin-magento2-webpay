@@ -4,6 +4,15 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# [3.2.6] - 2019-10-21
+## Fixed
+- Se remueve campo "extras" de composer.json para poder subir el plugin a Magento marketplace
+
+## [3.2.5] - 2019-10-18
+### Fixed
+- Se actualiza versión del SDK a la última versión para resolver la conexión con
+los servicios SOAP
+
 ## [3.2.4] - 2019-10-16
 ### Fixed
 - Corrige manejo de stock cuando el pago no es completado y la orden es cancelada. La cantidad es retornada al stock disponible.
