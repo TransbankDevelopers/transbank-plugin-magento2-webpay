@@ -14,7 +14,7 @@ RUN apt-get update \
 	libxslt1-dev \
 	apt-utils \
 	gnupg \
-	mysql-client \
+	default-mysql-client \
 	git \
 	nano \
 	wget \
