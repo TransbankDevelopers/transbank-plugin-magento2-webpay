@@ -7,6 +7,7 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 # [3.2.6] - 2019-10-21	
 ## Fixed	
 - Se remueve campo "extras" de composer.json para poder subir el plugin a Magento marketplace
+- Se añade autoload a composer.json
 
 ## [3.2.5] - 2019-10-18
 ### Fixed
