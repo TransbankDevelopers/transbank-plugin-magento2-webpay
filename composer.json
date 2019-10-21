@@ -16,5 +16,10 @@
             "/.gitattributes"
         ]
     },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ]
+    },
     "license": "BSD-3-Clause"
 }
