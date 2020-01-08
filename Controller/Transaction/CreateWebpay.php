@@ -12,12 +12,12 @@ use \Magento\Framework\App\Request\InvalidRequestException;
 if (interface_exists("\Magento\Framework\App\CsrfAwareActionInterface")) {
     class CreateWebpay extends CreateWebpayM22 implements \Magento\Framework\App\CsrfAwareActionInterface {
 
-        public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+        public function createCsrfValidationException(RequestInterface $request): InvalidRequestException
         {
             return null;
         }
 
-        public function validateForCsrf(RequestInterface $request): ?bool
+        public function validateForCsrf(RequestInterface $request): bool
         {
             return true;
         }
