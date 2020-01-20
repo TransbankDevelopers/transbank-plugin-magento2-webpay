@@ -21,7 +21,7 @@
             "registration.php"
         ],
         "psr-4": {
-        "Transbank\\Webpay": ""
+        "Transbank\\Webpay\\": ""
         }
     },
     "license": "BSD-3-Clause"
