@@ -5,3 +5,5 @@ docker-magento2.2/plugin/Transbank
 docker-magento2.3/plugin/Transbank
 plugin-transbank-webpay-magento2*.zip
 
+/vendor
+/composer.lock
