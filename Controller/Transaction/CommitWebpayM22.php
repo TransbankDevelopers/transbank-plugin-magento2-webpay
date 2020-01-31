@@ -53,6 +53,10 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action {
 
             $tokenWs = isset($_POST['token_ws']) ? $_POST['token_ws'] : null;
 
+            if(is_null($tokenWs) && isset($_POST['TBK_TOKEN'])){
+                throw new \Exception('Transacción cancelada');
+            }
+            
             if($tokenWs != $this->checkoutSession->getTokenWs()) {
                 throw new \Exception('Token inválido');
             }
