@@ -4,7 +4,14 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-# [3.2.7] - 2020-01-15	
+# [3.3.0] - 2020-02-05
+## Added	
+- Agrega TCPDF como dependencia [https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/66]
+## Fixed
+- Se cambia el mensaje cuando una trasacción es cancelada [https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/67]
+- Se elimina bootstrap and jquery de las librerias [https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/64]
+
+# [3.2.7] - 2020-01-15
 ## Fixed	
 - Corrige compatibilidad con php 7.0.
 
