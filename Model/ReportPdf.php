@@ -1,7 +1,7 @@
 <?php
 namespace Transbank\Webpay\Model;
 
-use Transbank\Webpay\Model\tcpdf\TCPDF\TCPDF;
+use \TCPDF;
 
 class ReportPdf {
 
@@ -58,17 +58,27 @@ class ReportPdf {
             $this->buffer.= '</table></body></html>';
     }
 
-    public function getReport($myJSON){
+    public function getReport($myJSON)
+    {
         $obj = json_decode($myJSON, true);
-        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        $pdf = new TCPDF(
+            PDF_PAGE_ORIENTATION,
+            PDF_UNIT,
+            PDF_PAGE_FORMAT,
+            true,
+            'UTF-8',
+            false
+        );
+
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetPrintHeader(false);
         $pdf->SetPrintFooter(false);
-        $pdf->SetMargins(10,5,10, false);
+        $pdf->SetMargins(10, 5, 10, false);
         $pdf->AddPage();
         $pdf->setFontSubsetting(false);
-        $this->chain($obj,0);
+        $this->chain($obj, 0);
         $pdf->writeHTML($this->buffer, 0, 1, 0, true, '');
-        $pdf->Output('report_webpay_'.date_timestamp_get(date_create()).'.pdf', 'D');
+        $pdf->Output('report_webpay_' . date_timestamp_get(date_create()) . '.pdf', 'D');
     }
 }
