@@ -4,7 +4,7 @@
     "require": {
         "ext-json": "*",
         "transbank/transbank-sdk": ">=1.5.3",
-        "tecnickcom/tcpdf": "6.2.13"
+        "tecnickcom/tcpdf": "6.3.5"
     },
     "type": "magento2-module",
     "version": "3.3.0",
