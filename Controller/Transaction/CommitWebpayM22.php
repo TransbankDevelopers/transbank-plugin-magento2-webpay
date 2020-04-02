@@ -53,17 +53,16 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
         $transactionResult = [];
         try {
             $tokenWs = isset($_POST['token_ws']) ? $_POST['token_ws'] : null;
-        
-            if (is_null($tokenWs) && isset($_POST['TBK_TOKEN'])) {
+            if (isset($_POST['TBK_TOKEN'])) {
+                return $this->orderCanceledByUser($_POST['TBK_TOKEN'], $orderStatusCanceled);
+            }
+            
+            if (is_null($tokenWs)) {
                 throw new \Exception('Token no encontrado');
             }
-        
     
-            $webpayOrderDataModel = $this->webpayOrderDataFactory->create();
-            $webpayOrderData = $webpayOrderDataModel->load($tokenWs, 'token');
-            $orderId = $webpayOrderData->getOrderId();
-            $order = $this->getOrder($orderId);
-        
+            list($webpayOrderData, $order) = $this->getOrderByToken($tokenWs);
+    
             $paymentStatus = $webpayOrderData->getPaymentStatus();
             if ($paymentStatus == WebpayOrderData::PAYMENT_STATUS_WATING) {
                 
@@ -131,19 +130,8 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
             }
             
         } catch (\Exception $e) {
-            $message = 'Error al confirmar transacción: ' . $e->getMessage();
-            $this->log->logError($message);
-            $this->checkoutSession->restoreQuote();
-            $this->messageManager->addError(__($message));
-            if ($order != null) {
-                $order->cancel();
-                $order->save();
-                $order->setStatus($orderStatusCanceled);
-                $order->addStatusToHistory($order->getStatus(), $message);
-                $order->save();
-            }
-        
-            return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+            $order = isset($order) ? $order : null;
+            return $this->errorOnConfirmation($e, $order, $orderStatusCanceled);
         }
     }
     
@@ -201,6 +189,23 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
         return $message;
     }
     
+    protected function orderCanceledByUser($token, $orderStatusCanceled) {
+        list($webpayOrderData, $order) = $this->getOrderByToken($token);
+        $message = 'Orden cancelada por el usuario';
+        $this->checkoutSession->restoreQuote();
+        $this->messageManager->addError(__($message));
+        
+        if ($order != null) {
+            $order->cancel();
+            $order->save();
+            $order->setStatus($orderStatusCanceled);
+            $order->addStatusToHistory($order->getStatus(), $message);
+            $order->save();
+        }
+    
+        return $this->resultRedirectFactory->create()->setPath('checkout/cart');
+    }
+    
     protected function getRejectMessage(array $transactionResult)
     {
         if (isset($transactionResult['detailOutput'])) {
@@ -241,5 +246,40 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
     {
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         return $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
+    }
+    /**
+     * @param $tokenWs
+     * @return array
+     */
+    private function getOrderByToken($tokenWs)
+    {
+        $webpayOrderDataModel = $this->webpayOrderDataFactory->create();
+        $webpayOrderData = $webpayOrderDataModel->load($tokenWs, 'token');
+        $orderId = $webpayOrderData->getOrderId();
+        $order = $this->getOrder($orderId);
+        
+        return [$webpayOrderData, $order];
+    }
+    /**
+     * @param \Exception $e
+     * @param $order
+     * @param $orderStatusCanceled
+     * @return \Magento\Framework\Controller\Result\Redirect
+     */
+    private function errorOnConfirmation(\Exception $e, $order, $orderStatusCanceled)
+    {
+        $message = 'Error al confirmar transacción: ' . $e->getMessage();
+        $this->log->logError($message);
+        $this->checkoutSession->restoreQuote();
+        $this->messageManager->addError(__($message));
+        if ($order != null) {
+            $order->cancel();
+            $order->save();
+            $order->setStatus($orderStatusCanceled);
+            $order->addStatusToHistory($order->getStatus(), $message);
+            $order->save();
+        }
+        
+        return $this->resultRedirectFactory->create()->setPath('checkout/cart');
     }
 }

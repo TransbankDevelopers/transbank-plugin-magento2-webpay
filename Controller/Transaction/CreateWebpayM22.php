@@ -99,7 +99,7 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
             $orderId = $this->getOrderId();
             
             $transbankSdkWebpay = new TransbankSdkWebpay($config);
-            $response = $transbankSdkWebpay->initTransaction($grandTotal, $quoteId, '', $returnUrl, $finalUrl);
+            $response = $transbankSdkWebpay->initTransaction($grandTotal, $quoteId, $orderId, $returnUrl, $finalUrl);
             
             $dataLog = ['grandTotal' => $grandTotal, 'quoteId' => $quoteId, 'orderId' => $orderId];
             $message = "<h3>Esperando pago con Webpay</h3><br>" . json_encode($dataLog);
@@ -107,7 +107,7 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
             if (isset($response['token_ws'])) {
                 $webpayOrderData = $this->saveWebpayData($response['token_ws'], WebpayOrderData::PAYMENT_STATUS_WATING, $orderId, $quoteId);
             } else {
-                $webpayOrderData = $this->saveWebpayData($response['token_ws'], WebpayOrderData::PAYMENT_STATUS_ERROR, $orderId, $quoteId);
+                $webpayOrderData = $this->saveWebpayData('', WebpayOrderData::PAYMENT_STATUS_ERROR, $orderId, $quoteId);
                 $order->cancel();
                 $order->save();
                 $order->setStatus($orderStatusCanceled);
