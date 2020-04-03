@@ -180,7 +180,7 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
             <b>Order de Compra: </b> {$transactionResult['detailOutput']['buyOrder']}<br>
             <b>Fecha de la Transacci&oacute;n: </b>" . date('d-m-Y', strtotime($transactionResult['transactionDate'])) . "<br>
             <b>Hora de la Transacci&oacute;n: </b>" . date('H:i:s', strtotime($transactionResult['transactionDate'])) . "<br>
-            <b>Tarjeta: </b>************{$transactionResult['cardDetail']['cardNumber']}<br>
+            <b>Tarjeta: </b>**** **** **** {$transactionResult['cardDetail']['cardNumber']}<br>
             <b>C&oacute;digo de autorizacion: </b>{$transactionResult['detailOutput']['authorizationCode']}<br>
             <b>Tipo de Pago: </b>{$paymentType}<br>
             <b>Tipo de Cuotas: </b>{$tipoCuotas}<br>
