@@ -68,6 +68,7 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
                 
                 $transbankSdkWebpay = new TransbankSdkWebpay($config);
                 $transactionResult = $transbankSdkWebpay->commitTransaction($tokenWs);
+                
                 $webpayOrderData->setMetadata(json_encode($transactionResult));
                 
                 if (isset($transactionResult->buyOrder) && isset($transactionResult->detailOutput) && $transactionResult->detailOutput->responseCode == 0) {
@@ -102,7 +103,7 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
                     
                     $this->checkoutSession->restoreQuote();
                     
-                    $message = $this->getRejectMessage($transactionResult);
+                    $message = $this->getRejectMessage(json_decode(json_encode($transactionResult), true));
                     $this->messageManager->addError(__($message));
                     
                     return $this->resultRedirectFactory->create()->setPath('checkout/cart');
