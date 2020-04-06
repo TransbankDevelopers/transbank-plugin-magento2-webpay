@@ -7,7 +7,6 @@
         "tecnickcom/tcpdf": "6.3.5"
     },
     "type": "magento2-module",
-    "version": "3.3.0",
     "archive": {
         "exclude": [
             "/docs",

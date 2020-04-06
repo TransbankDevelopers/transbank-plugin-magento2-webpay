@@ -123,8 +123,7 @@ Para generar una nueva versión, se debe crear un PR (con un título "Prepare re
 En ese PR deben incluirse los siguientes cambios:
 
 1. Modificar el archivo `CHANGELOG.md` para incluir una nueva entrada (al comienzo) para `X.Y.Z` que explique en español los cambios.
-2. Modificar el archivo `composer.json` y cambiar el valor de `"version":` por el `X.Y.Z` nuevo.
-3. Modificar el archivo `etc/module.xml` y cambiar el valor de `setup_version` por el `X.Y.Z` nuevo.
+2. Modificar el archivo `etc/module.xml` y cambiar el valor de `setup_version` por el `X.Y.Z` nuevo.
 
 Luego de obtener aprobación del pull request, debes mezclar a master e inmediatamente generar un release en GitHub con el tag `vX.Y.Z`. En la descripción del release debes poner lo mismo que agregaste al changelog.
 
