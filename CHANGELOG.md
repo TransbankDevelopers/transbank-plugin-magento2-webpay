@@ -4,6 +4,14 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# [3.4.0] - 2020-04-06
+## Added	
+- Mejora estabilidad de plugin, guardando token de la orden en base de datos en reemplazo de variables de sesión [PR #73](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/73)
+- Se cambia visibilidad de las funciones internas del plugin de `private` a `protected` para permitir herencia.  [PR #73](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/73)
+## Fixed
+- Se soluciona exportación de diagnostico en PDF [PR #71](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/71)
+- Se incluyen instrucciones en el README sobre como pasar a producción [PR #70](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/70)
+
 # [3.3.0] - 2020-02-05
 ## Added	
 - Agrega TCPDF como dependencia [https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/66]
