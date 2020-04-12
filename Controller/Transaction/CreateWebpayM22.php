@@ -74,8 +74,6 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
                 $this->setQuoteData($quote, $guestEmail);
             }
             
-            $quoteData = $quote->getData();
-            
             $quote->getPayment()->importData(['method' => Webpay::CODE]);
             $quote->collectTotals()->save();
             $order = $tmpOrder;
