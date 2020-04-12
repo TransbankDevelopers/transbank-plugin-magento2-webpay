@@ -151,7 +151,7 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             
             return $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return null;
         }
     }
