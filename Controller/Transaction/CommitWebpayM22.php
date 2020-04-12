@@ -274,7 +274,7 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
         $this->log->logError($message);
         $this->checkoutSession->restoreQuote();
         $this->messageManager->addError(__($message));
-        if ($order != null) {
+        if ($order != null && $order->getStatus() != Order::STATE_PROCESSING) {
             $order->cancel();
             $order->save();
             $order->setStatus($orderStatusCanceled);
