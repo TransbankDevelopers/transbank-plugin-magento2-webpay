@@ -13,7 +13,8 @@ use Transbank\Webpay\Model\WebpayOrderData;
  */
 class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
 {
-    
+    protected $configProvider;
+
     /**
      * CreateWebpayM22 constructor.
      *
@@ -53,17 +54,16 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        
         $response = null;
         $order = null;
         $config = $this->configProvider->getPluginConfig();
-        $orderStatusCanceled = $config['error_pay'];
+        $orderStatusCanceled = $this->configProvider->getOrderErrorStatus();
+        $orderStatusPendingPayment = $this->configProvider->getOrderPendingStatus();
+
         try {
-            
             $guestEmail = isset($_GET['guestEmail']) ? $_GET['guestEmail'] : null;
             
             $config = $this->configProvider->getPluginConfig();
-            $orderStatusPendingPayment = $config['order_status'];
             
             $tmpOrder = $this->getOrder();
             $this->checkoutSession->restoreQuote();

@@ -3,6 +3,7 @@
 namespace Transbank\Webpay\Model\Config;
 
 class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface {
+    const CONFIG_ROUTE = 'payment/transbank_webpay/security_parameters/';
 
     public function __construct(\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface) {
 
@@ -18,20 +19,31 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface 
     }
 
     public function getPluginConfig() {
-        $conf = 'payment/transbank_webpay/security_parameters/';
         $config = array(
-			'MODO' => $this->scopeConfigInterface->getValue($conf.'environment'),
-			'PRIVATE_KEY' => $this->scopeConfigInterface->getValue($conf.'private_key'),
-			'PUBLIC_CERT' => $this->scopeConfigInterface->getValue($conf.'public_cert'),
-			'WEBPAY_CERT' => $this->scopeConfigInterface->getValue($conf.'webpay_cert'),
-            'COMMERCE_CODE' => $this->scopeConfigInterface->getValue($conf.'commerce_code'),
+			'MODO' => $this->scopeConfigInterface->getValue(self::CONFIG_ROUTE.'environment'),
+			'PRIVATE_KEY' => $this->scopeConfigInterface->getValue(self::CONFIG_ROUTE.'private_key'),
+			'PUBLIC_CERT' => $this->scopeConfigInterface->getValue(self::CONFIG_ROUTE.'public_cert'),
+			'WEBPAY_CERT' => $this->scopeConfigInterface->getValue(self::CONFIG_ROUTE.'webpay_cert'),
+            'COMMERCE_CODE' => $this->scopeConfigInterface->getValue(self::CONFIG_ROUTE.'commerce_code'),
 			'URL_RETURN' => 'checkout/transaction/commitwebpay',
 			'URL_FINAL' => 'checkout/transaction/commitwebpay',
             'ECOMMERCE' => 'magento',
-            'order_status' => $this->scopeConfigInterface->getValue($conf.'order_status'),
-            'sucefully_pay' => $this->scopeConfigInterface->getValue($conf.'sucefully_pay'),
-            'error_pay' => $this->scopeConfigInterface->getValue($conf.'error_pay')
+            'order_status' => $this->getOrderPendingStatus(),
+            'sucefully_pay' => $this->getOrderSuccessStatus(),
+            'error_pay' => $this->getOrderErrorStatus(),
         );
         return $config;
+    }
+
+    public function getOrderPendingStatus() {
+        return $this->scopeConfigInterface->getValue(self::CONFIG_ROUTE.'order_status');
+    }
+
+    public function getOrderSuccessStatus() {
+        return $this->scopeConfigInterface->getValue(self::CONFIG_ROUTE.'sucefully_pay');
+    }
+
+    public function getOrderErrorStatus() {
+        return $this->scopeConfigInterface->getValue(self::CONFIG_ROUTE.'error_pay');
     }
 }
