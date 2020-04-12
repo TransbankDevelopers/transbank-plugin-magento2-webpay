@@ -106,6 +106,7 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
     
             if (isset($response['token_ws'])) {
                 $webpayOrderData = $this->saveWebpayData($response['token_ws'], WebpayOrderData::PAYMENT_STATUS_WATING, $orderId, $quoteId);
+                $order->setStatus($orderStatusPendingPayment);
             } else {
                 $webpayOrderData = $this->saveWebpayData('', WebpayOrderData::PAYMENT_STATUS_ERROR, $orderId, $quoteId);
                 $order->cancel();
