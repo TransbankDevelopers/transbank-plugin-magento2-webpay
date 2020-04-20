@@ -1,7 +1,7 @@
 <?php
 namespace Transbank\Webpay\Setup;
 
-use Magento\Framework\Setup\UpgradeSchemaInterface;
+use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use \Magento\Framework\DB\Ddl\Table;
@@ -9,12 +9,12 @@ use \Magento\Framework\DB\Ddl\Table;
 /**
  * Upgrade the Catalog module DB scheme
  */
-class UpgradeSchema implements UpgradeSchemaInterface
+class InstallSchema implements InstallSchemaInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
         $this->createWebpayOrdersTable($setup, $context);
@@ -23,13 +23,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     
     protected function createWebpayOrdersTable(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
-        if (version_compare($context->getVersion(), '3.3.0', '<')) {
-            return;
-        }
         $mainTable = $setup->getTable('webpay_orders_data');
-        if ($setup->getConnection()->isTableExists($mainTable) === true) {
-            return;
-        }
         $table = $setup->getConnection()
             ->newTable($mainTable)
             ->addColumn('id', Table::TYPE_INTEGER, null, [
