@@ -9,3 +9,4 @@ cp -rf ../Model $DIR
 cp -rf ../view $DIR
 cp -rf ../composer.json $DIR
 cp -rf ../registration.php $DIR
+cp -rf ../Setup $DIR
