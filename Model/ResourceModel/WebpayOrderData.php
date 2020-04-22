@@ -5,6 +5,7 @@ use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
 class WebpayOrderData extends AbstractDb
 {
+    const TABLE_NAME = 'webpay_orders_data';
     /**
      * Initialize resource
      *
@@ -12,6 +13,6 @@ class WebpayOrderData extends AbstractDb
      */
     public function _construct()
     {
-        $this->_init('webpay_orders_data', 'id');
+        $this->_init(static::TABLE_NAME, 'id');
     }
 }
