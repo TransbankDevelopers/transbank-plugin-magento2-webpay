@@ -13,7 +13,8 @@ use Transbank\Webpay\Model\WebpayOrderData;
  */
 class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
 {
-    
+    protected $configProvider;
+
     /**
      * CreateWebpayM22 constructor.
      *
@@ -53,17 +54,16 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        
         $response = null;
         $order = null;
         $config = $this->configProvider->getPluginConfig();
-        $orderStatusCanceled = $config['error_pay'];
+        $orderStatusCanceled = $this->configProvider->getOrderErrorStatus();
+        $orderStatusPendingPayment = $this->configProvider->getOrderPendingStatus();
+
         try {
-            
             $guestEmail = isset($_GET['guestEmail']) ? $_GET['guestEmail'] : null;
             
             $config = $this->configProvider->getPluginConfig();
-            $orderStatusPendingPayment = $config['order_status'];
             
             $tmpOrder = $this->getOrder();
             $this->checkoutSession->restoreQuote();
@@ -73,8 +73,6 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
             if ($guestEmail != null) {
                 $this->setQuoteData($quote, $guestEmail);
             }
-            
-            $quoteData = $quote->getData();
             
             $quote->getPayment()->importData(['method' => Webpay::CODE]);
             $quote->collectTotals()->save();
@@ -106,6 +104,7 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
     
             if (isset($response['token_ws'])) {
                 $webpayOrderData = $this->saveWebpayData($response['token_ws'], WebpayOrderData::PAYMENT_STATUS_WATING, $orderId, $quoteId);
+                $order->setStatus($orderStatusPendingPayment);
             } else {
                 $webpayOrderData = $this->saveWebpayData('', WebpayOrderData::PAYMENT_STATUS_ERROR, $orderId, $quoteId);
                 $order->cancel();
@@ -152,7 +151,7 @@ class CreateWebpayM22 extends \Magento\Framework\App\Action\Action
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             
             return $objectManager->create('\Magento\Sales\Model\Order')->load($orderId);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return null;
         }
     }

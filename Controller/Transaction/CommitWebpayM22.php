@@ -21,6 +21,7 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
         "S2" => "2 cuotas sin interés",
         "NC" => "N cuotas sin interés",
     ];
+    protected $configProvider;
     
     public function __construct(
         \Magento\Framework\App\Action\Context $context, \Magento\Checkout\Model\Cart $cart,
@@ -49,7 +50,7 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $config = $this->configProvider->getPluginConfig();
-        $orderStatusCanceled = $config['error_pay'];
+        $orderStatusCanceled = $this->configProvider->getOrderErrorStatus();
         $transactionResult = [];
         try {
             $tokenWs = isset($_POST['token_ws']) ? $_POST['token_ws'] : null;
@@ -82,7 +83,7 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
                     $payment->setTransactionId($authorizationCode);
                     $payment->setAdditionalInformation([\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array)$transactionResult]);
                     
-                    $orderStatus = $config['sucefully_pay'];
+                    $orderStatus = $this->configProvider->getOrderSuccessStatus();
                     $order->setState($orderStatus)->setStatus($orderStatus);
                     $order->addStatusToHistory($order->getStatus(), json_encode($transactionResult));
                     $order->save();
@@ -273,7 +274,7 @@ class CommitWebpayM22 extends \Magento\Framework\App\Action\Action
         $this->log->logError($message);
         $this->checkoutSession->restoreQuote();
         $this->messageManager->addError(__($message));
-        if ($order != null) {
+        if ($order != null && $order->getState() != Order::STATE_PROCESSING) {
             $order->cancel();
             $order->save();
             $order->setStatus($orderStatusCanceled);
