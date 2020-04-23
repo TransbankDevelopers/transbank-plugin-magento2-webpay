@@ -4,6 +4,12 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# [3.4.1] - 2020-04-06
+## Fixed
+- Arregla el uso de la configuración 'Estado de nueva orden' y se ordena código [PR #75](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/75)
+- Cambia versión de tcpf a un rango en vez de una versión específica para evitar problemas de actualización en el futuro [PR #76](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/76)
+- Agrega script para crear nueva tabla al instalar el plugin (antes solo se creaba al actualizar) [PR #77](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/77)
+
 # [3.4.0] - 2020-04-06
 ## Added	
 - Mejora estabilidad de plugin, guardando token de la orden en base de datos en reemplazo de variables de sesión [PR #73](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/73)
