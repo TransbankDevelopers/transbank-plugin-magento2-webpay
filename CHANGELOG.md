@@ -8,7 +8,7 @@ y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.ht
 ## Fixed
 - Arregla el uso de la configuración 'Estado de nueva orden' y se ordena código [PR #75](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/75)
 - Cambia versión de tcpf a un rango en vez de una versión específica para evitar problemas de actualización en el futuro [PR #76](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/76)
-- Agrega script para crear nueva tabla al instalar el plugin (antes solo se creaba al actualizar) [PR #77](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/77)
+- Agrega script para crear nueva tabla al instalar el plugin (antes solo se creaba al actualizar). También se crea código para eliminar la tabla al desintstalar [PR #77](https://github.com/TransbankDevelopers/transbank-plugin-magento2-webpay/pull/77)
 
 # [3.4.0] - 2020-04-06
 ## Added	
