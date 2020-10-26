@@ -7,3 +7,6 @@ plugin-transbank-webpay-magento2*.zip
 
 /vendor
 /composer.lock
+
+development-docker/.built
+development-docker/plugin/*
