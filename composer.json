@@ -3,7 +3,7 @@
   "description": "Plugin oficial de magento2 para Webpay",
   "require": {
     "ext-json": "*",
-    "transbank/transbank-sdk": ">=1.5.3",
+    "transbank/transbank-sdk": "1.7.2",
     "tecnickcom/tcpdf": "^6.3"
   },
   "type": "magento2-module",
