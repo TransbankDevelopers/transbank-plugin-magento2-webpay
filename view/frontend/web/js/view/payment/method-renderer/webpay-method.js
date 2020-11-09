@@ -57,7 +57,7 @@ define(
 
                                 var url = window.checkoutConfig.pluginConfigWebpay.createTransactionUrl;
 
-                                if (quote.guestEmail) {
+                                if (!customer.isLoggedIn()) {
                                     url += '?guestEmail=' + encodeURIComponent(quote.guestEmail);
                                 }
 
