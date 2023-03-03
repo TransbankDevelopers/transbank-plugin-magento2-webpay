@@ -4,6 +4,10 @@ Todos los cambios notables a este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 y este proyecto adhiere a [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+# [3.4.3] - 2023-03-02
+## Fixed
+- Se agrega una nueva versión del SDK de Transbank que cambia el certificado publico de Transbank para producción.
+
 # [3.4.2] - 2020-08-19
 ## Fixed
 - Arregla error con descuentos de uso limitado
